@@ -85,8 +85,12 @@ export class UserService {
               return this.translateLoaderService.loadAccountTemplate(defaultUserAccount.account.id).pipe(map(results => {
                 var value = this.translate.instant('MENU');
                 console.log(value);
+                this.setCurrentUser(user);
                 return user;
               }));
+            }
+            else{
+              throw Error("No Accounts for user");
             }
           } else{
             throw Error("No Accounts for user");

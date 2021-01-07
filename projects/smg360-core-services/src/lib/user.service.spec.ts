@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { UserService } from './user.service';
 import { PermissionService } from './permission.service';
 import { Observable } from 'rxjs';
-import { AccountUtilityService } from 'smg360-core-services';
+import { AccountUtilityService } from './account-utility.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -60,7 +60,8 @@ describe('UserService', () => {
       providers: [MockProvider(CacheService),
       MockProvider(TranslateLoaderService),
       MockProvider(PartialTranslateLoaderService),
-      MockProvider(TranslateService)
+      MockProvider(TranslateService),
+      MockProvider(AccountUtilityService)
       ]
     });
     service = TestBed.inject(UserService);
@@ -71,11 +72,6 @@ describe('UserService', () => {
     it('should be defined', function () {
       expect(service).toBeDefined();
     });
-
-    // it('should have method to getUserSettings', function () {
-    //     expect(service.getUserSettings).toBeDefined();
-    //     expect(service.getUserSettings).toEqual(jasmine.any(Function));
-    // });
 
     it('should have method to getCurrentUser', function () {
       expect(service.getCurrentUser).toBeDefined();
@@ -106,14 +102,6 @@ describe('UserService', () => {
       expect(service.setAdminUser).toBeDefined();
       expect(service.setAdminUser).toEqual(jasmine.any(Function));
     });
-
-    // it('should initialize userSettings', function () {
-    //     const userSettings = service.getUserSettings();
-
-    //     expect(userSettings).toEqual(jasmine.any(UserSettings));
-    //     expect(userSettings.language).toBe(mockLanguage);
-    // });
-
   });
   var cacheService: CacheService;
   describe('caching methods', function () {
@@ -201,18 +189,6 @@ describe('UserService', () => {
         httpRequest.flush(user);
       });
 
-      // it('should default preferred language to en-US', function () {
-      //   var translate = TestBed.inject(TranslateService);
-      //   spyOn(translate, "use").and.callFake(() => undefined);
-
-      //   var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      //   service.getAdminUser().subscribe(result=>{
-      //     expect(translate.use).toHaveBeenCalledTimes(1);
-      //   });
-      //   var httpRequest = mockHttp.expectOne(url);
-      //   httpRequest.flush(user);
-      // });
-
       it('should return current user', function () {
         var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
         service.getAdminUser().subscribe((result: any) => {
@@ -223,28 +199,6 @@ describe('UserService', () => {
         var httpRequest = mockHttp.expectOne(url);
         httpRequest.flush(user);
       });
-
-      // it('should reject when current user request service fails', function () {
-      //     $httpBackend.expectGET(url).respond(500, 'Bad Request');
-
-      //     const promise = UserService.getAdminUser();
-      //     $httpBackend.flush();
-      //     $rootScope.$apply();
-
-      //     expect(promise.$$state.status).toEqual(2);  // Rejected
-      // });
-
-      // it('should reject when permission service fails', function () {
-      //     PermissionService.getPermissionsByObjectId.and.callFake(getMockFailedPermission);
-
-      //     $httpBackend.expectGET(url).respond(200, user);
-
-      //     const promise = UserService.getAdminUser();
-      //     $httpBackend.flush();
-      //     $rootScope.$apply();
-
-      //     expect(promise.$$state.status).toEqual(2);  // Rejected
-      // });
     });
     describe('when user permission canUpdate is false', function () {
       beforeEach(function () {
@@ -286,7 +240,8 @@ describe('UserService', () => {
         translate = TestBed.inject(TranslateService);
         spyOn(translate, "instant").and.callFake(() => 'Translated Menu');
         var translateLoaderService = TestBed.inject(TranslateLoaderService);
-        spyOn(translateLoaderService, "loadAccountTemplate").and.callFake(() => new Observable(obs=>{}));
+        const translations={};
+        spyOn(translateLoaderService, "loadAccountTemplate").and.callFake(() => new Observable((observer) => observer.next()));
         cacheService = TestBed.inject(CacheService);
         spyOn(cacheService, "get").and.callFake(() => undefined);
         spyOn(cacheService, "set").and.callFake(() => []);
@@ -375,24 +330,6 @@ describe('UserService', () => {
             httpRequest.flush(userNoAccount);
 
           });
-
-          // it('when more than 200 attempts are made to load translation', function () {
-          //     $httpBackend.expectGET(url).respond(200, user);
-
-          //     const promise = UserService.getCurrentUser();
-          //     $httpBackend.flush();
-          //     $rootScope.$apply();
-
-          //     let count = 0;
-          //     while (promise.$$state.status === 0 && count < 201) {
-          //         $timeout.flush();
-          //         count++;
-          //     }
-
-          //     expect(promise.$$state.status).toEqual(2);  // Rejected
-
-          // });
-
       });
 
   });

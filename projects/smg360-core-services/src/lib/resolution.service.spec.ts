@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { MockProvider } from 'ng-mocks';
 import { Resolutions } from './enums/resolutions.enum';
 
 import { ResolutionService } from './resolution.service';
@@ -9,8 +10,8 @@ describe('ResolutionService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers:[
-        {provide:Window,useValue:_$window}
-      ]
+        {provide:'Window',useValue:_$window}
+       ]
     });
     service = TestBed.inject(ResolutionService);
   });

@@ -6,8 +6,7 @@ import { Resolutions } from './enums/resolutions.enum';
   providedIn: 'root'
 })
 export class ResolutionService {
-
-  constructor(@Inject('Window') private window:Window) { }
+  constructor(@Inject('Window')private window:Window) { }
   resolutionRanges:any = {
     mobile: {
         max: 320
