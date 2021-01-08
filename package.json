@@ -1,5 +1,5 @@
 {
-  "name": "@smg/smg360-core",
+  "name": "@smg/smg360-core-services",
   "version": "0.0.0",
   "description": "Core services shared between SMG applications",
   "scripts": {
