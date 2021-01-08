@@ -2,10 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { MockProvider } from 'ng-mocks';
-import { CacheService } from 'smg360-core-services';
-
-
 import { AuthenticationService } from './authentication.service';
+import { CacheService } from './cache.service';
 import { Views } from './enums/views.enum';
 import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
