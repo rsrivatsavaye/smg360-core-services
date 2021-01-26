@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/internal/operators/map';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { take } from 'rxjs/internal/operators/take';
+import { map,switchMap,take } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
 import { CacheType } from './enums/cacheType.enum';
