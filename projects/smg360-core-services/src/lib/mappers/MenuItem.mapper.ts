@@ -43,11 +43,11 @@ export class MenuItemMapper {
   
     static settingsFilter(menuItem, settings) {
   
-      if (menuItem.menuTextTranslationKey === "DASHBOARDS" && !settings.showDashboardLink) { return false; }
-      if (menuItem.menuTextTranslationKey === "COMMENT_REPORT" && !settings.showCommentReportLink) { return false; }
-      if (menuItem.menuTextTranslationKey === "V5_LINK" && !settings.showV5Link) { return false; }
-      if (menuItem.menuTextTranslationKey === "FEEDBACK" && !settings.showFeedbackLink) { return false; }
-      if (menuItem.menuTextTranslationKey === "LOGOUT" && !settings.showLogOutLink) { return false; }
+      if (menuItem.menuTextTranslationKey === "DASHBOARDS" && !settings.leftMenuLinks.dashboard) { return false; }
+      if (menuItem.menuTextTranslationKey === "COMMENT_REPORT" && !settings.leftMenuLinks.commentReport) { return false; }
+      if (menuItem.menuTextTranslationKey === "V5_LINK" && !settings.leftMenuLinks.V5Link) { return false; }
+      if (menuItem.menuTextTranslationKey === "FEEDBACK" && !settings.leftMenuLinks.feedback) { return false; }
+      if (menuItem.menuTextTranslationKey === "LOGOUT" && !settings.leftMenuLinks.logOut) { return false; }
       return true;
     }
     static assignAnalyticsMetadataObjects(items) {
