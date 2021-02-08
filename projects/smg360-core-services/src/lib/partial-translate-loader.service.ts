@@ -11,6 +11,7 @@ export class PartialTranslateLoaderService {
   language:string;
   constructor(private http:HttpClient,private translate:TranslateService){
      this.language = localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
+     this.language = this.language.replace('"',"");
      this.translate.use(this.language);
   }
   
