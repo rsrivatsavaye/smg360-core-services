@@ -12,7 +12,7 @@ export class PartialTranslateLoaderService {
   constructor(private http:HttpClient,private translate:TranslateService){
      this.language = localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
      if(this.language){
-      this.language = this.language.replace('"',"");
+      this.language = this.language.replace(/"/g,"");
      }
      
      this.translate.use(this.language);
@@ -20,7 +20,7 @@ export class PartialTranslateLoaderService {
   
   addPart(url: string) {
     if(this.language){
-      this.language = this.language.replace('"',"");
+      this.language = this.language.replace(/"/g,"");
      }
      return this.http.get(url+`?language=${this.language}`).pipe(map(results=>{  
       this.translate.setTranslation(this.language,results,true);
