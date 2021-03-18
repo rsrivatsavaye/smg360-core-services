@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import {  Injectable } from '@angular/core';
 import { map } from 'rxjs/internal/operators/map';
+import { catchError } from 'rxjs/operators';
 import { Views } from './enums/views.enum';
 import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
@@ -82,10 +83,11 @@ export class AuthenticationService {
         }
 
       //  this.refreshPromise = null;
-      }), (error) => {
-        this.logOut();
+      }, catchError(error => {
+        //this.logOut();
         throw new Error("Error refreshing token");
-      });
+      })
+      ));
 
     } else {
       throw new Error("Error refreshing token authData not present in local storage");
