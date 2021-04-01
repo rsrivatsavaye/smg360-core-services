@@ -14,8 +14,8 @@ export class Accounts {
         this.accounts.push(account);
     };
 
-    add = function (id, name, type) {
-        this.accounts.push(new Account(id, name, type));
+    add = function (id, name, type, isActive) {
+        this.accounts.push(new Account(id, name, type, isActive));
     };
 
     find = function (account) {
