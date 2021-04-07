@@ -103,10 +103,10 @@ export class UserService {
   private getCurrent(): Observable<any> {
     return this.http.get<any>("/api/user/current");
   }
-  private getGroupUsers(groupId: string | number): Observable<any> {
-    return this.http.get<any>("/api/user/groupUsers/${groupId}");
+  getGroupUsers(groupId: string | number): Observable<any> {
+    return this.http.get<any>(`/api/user/groupUsers/${groupId}`);
   }
-  private createUsers(usersCreateRequest: any): Observable<any> {
+  createUsers(usersCreateRequest: any): Observable<any> {
     return this.http.post<any>("/api/user/create", usersCreateRequest);
   }
 
