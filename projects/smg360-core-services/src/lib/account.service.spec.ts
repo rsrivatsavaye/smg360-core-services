@@ -13,16 +13,16 @@ describe('AccountService', () => {
   const cacheType = CacheType.Account;
   const allAccountsCacheKey = 'all-accounts';
   var mockAllAccounts: Array<Account> = [
-    { id: '1', nameKey: 'name 1', isActive: true } as Account,
-    { id: '2', nameKey: 'name 2', isActive: true } as Account,
-    { id: '3', nameKey: 'name 3', isActive: true } as Account
+    { id: '1', nameKey: 'name 1', isActive: true, classification: 0 } as Account,
+    { id: '2', nameKey: 'name 2', isActive: true, classification: 0  } as Account,
+    { id: '3', nameKey: 'name 3', isActive: true, classification: 0  } as Account
   ];
   function getAccountsModel() {
 
     var allAccounts = new Accounts();
 
     mockAllAccounts.forEach(function (account) {
-      allAccounts.add(account.id, account.nameKey, undefined, account.isActive);
+      allAccounts.add(account.id, account.nameKey, undefined, account.isActive, account.classification);
     });
 
     return allAccounts;

@@ -29,7 +29,7 @@ export class AccountService {
       .pipe(take(1), map((accounts: Array<Account>) => {
         var allAccounts = Accounts.create();
         accounts.forEach(function (account) {
-          allAccounts.add(account.id, account.nameKey, account.type, account.isActive);
+          allAccounts.add(account.id, account.nameKey, account.type, account.isActive, account.classification);
         });
         this.cacheService.set(CacheType.Account, allAccountsCacheKey, allAccounts);
         return allAccounts;
