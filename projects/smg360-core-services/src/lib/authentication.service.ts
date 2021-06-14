@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {  Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { Views } from './enums/views.enum';
@@ -17,8 +17,8 @@ export class AuthenticationService {
   constructor(
     private viewService: ViewService,
     private v5AuthenticationRefreshService: V5AuthenticationRefreshService,
-    private localStorageService:LocalStorageService,
-    private locationService:LocationService,
+    private localStorageService: LocalStorageService,
+    private locationService: LocationService,
     private http: HttpClient) { }
 
 
@@ -33,7 +33,7 @@ export class AuthenticationService {
 
   logOut(v5Logoutcheck?) {
     console.info("AuthenticationService - logout() called.");
-    const authData:any = this.localStorageService.getObjectItem("authorizationData");
+    const authData: any = this.localStorageService.getObjectItem("authorizationData");
 
     if (v5Logoutcheck) {
       this.localStorageService.remove("authorizationData");
@@ -71,9 +71,11 @@ export class AuthenticationService {
   refreshToken(refreshV5) {
     const authData = this.localStorageService.getObjectItem("authorizationData") as any;
     if (authData) {
-     return this.http.post("/api/authentication/token/refresh", authData.refresh_token).pipe(map((refreshedToken: any) => {
-      this.localStorageService.remove("authorizationData");
-      this.localStorageService.setObjectItem("authorizationData", {
+      return this.http.post("/api/authentication/token/refresh", {
+        refreshToken: authData.refresh_token
+      }).pipe(map((refreshedToken: any) => {
+        this.localStorageService.remove("authorizationData");
+        this.localStorageService.setObjectItem("authorizationData", {
           token: refreshedToken.accessToken,
           refresh_token: refreshedToken.refreshToken
         });
@@ -82,7 +84,7 @@ export class AuthenticationService {
           this.v5AuthenticationRefreshService.refreshV5(refreshedToken.accessToken);
         }
 
-      //  this.refreshPromise = null;
+        //  this.refreshPromise = null;
       }, catchError(error => {
         //this.logOut();
         throw new Error("Error refreshing token");
