@@ -1,7 +1,6 @@
 /*
  * Public API Surface of smg360-core-services
  */
-
 export * from './lib/smg360-core-services.module';
 export * from './lib/account-utility.service';
 export * from './lib/account.service';

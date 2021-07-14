@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ResolutionService } from './resolution.service';
 import { ViewService } from './view.service';
 import * as EventNames from './contstants/event-names.constants';
@@ -21,8 +21,10 @@ export class ViewportService {
   // sidebarExpandedState= new BehaviorSubject(undefined);
   // viewSettingsChanged = new BehaviorSubject(undefined);
 
-  constructor(private resolutionService: ResolutionService,
-    private viewService: ViewService) {
+  constructor(
+    private resolutionService: ResolutionService,
+    private viewService: ViewService
+  ) {
     this.activate();
     this.isSideBarExpanded = true;
   }
@@ -69,8 +71,6 @@ export class ViewportService {
 
     this.updateElement(viewportSelector, 'viewportNoMenu', viewFeatures.leftMenu, 0);
     this.updateElement(viewportSelector, 'viewportFixedWidth', viewFeatures.dynamicWidth, 0);
-
-
   }
 
   updateElement(selector, className, removeStyle, delayed) {
@@ -78,12 +78,12 @@ export class ViewportService {
     if (selector && className) {
       const item = document.querySelector(selector);
       if (!delayed || item.length > 0) {
-        if(className.indexOf(" ")>-1){
-          var classList = className.split(" ");
+        if (className.indexOf(' ') > -1) {
+          const classList = className.split(' ');
           classList.forEach(c => {
             item.classList[styleFunc](c);
           });
-        }else{
+        } else {
           item.classList[styleFunc](className);
         }
       } else {
@@ -123,8 +123,7 @@ export class ViewportService {
   }
 
   showRawEmailContent(caseKey, emailMessageKey) {
-    this.notifySubscribers(EventNames.showRawEmailContent,
-      { show: true, caseKey: caseKey, emailMessageKey: emailMessageKey });
+    this.notifySubscribers(EventNames.showRawEmailContent, { show: true, caseKey, emailMessageKey });
   }
 
   hideRawEmailContent() {
@@ -140,9 +139,8 @@ export class ViewportService {
   isSidebarToggled() {
     const viewport =
       document.querySelector('.viewport-wrapper');
-    if (viewport.classList.contains("toggled")) {
+    if (viewport.classList.contains('toggled')) {
       return false;
-
     } else {
       return true;
     }
@@ -150,20 +148,11 @@ export class ViewportService {
 
   // Returns current state
   checkSidebarExpanded() {
-    const toggled = document.querySelector('.viewport-wrapper').classList.contains("toggled");
+    const toggled = document.querySelector('.viewport-wrapper').classList.contains('toggled');
     if (this.isMobile() || this.isPhablet() || this.isTablet()) {
-      if (toggled) {
-        return true;
-      } else {
-        return false;
-      }
-
+      return toggled;
     } else {
-      if (toggled) {
-        return false;
-      } else {
-        return true;
-      }
+      return !toggled;
     }
   }
 
@@ -172,8 +161,8 @@ export class ViewportService {
     const isExpanded = this.checkSidebarExpanded();
     if (this.isSideBarExpanded === undefined || this.isSideBarExpanded != isExpanded) {
       this.isSideBarExpanded = isExpanded;
-      //this.$rootScope.$broadcast("SideBarToggled", { isExpanded: isExpanded });
-      var event = new CustomEvent("SideBarToggled", { detail: { isExpanded: isExpanded } });
+      // this.$rootScope.$broadcast("SideBarToggled", { isExpanded: isExpanded });
+      const event = new CustomEvent('SideBarToggled', { detail: { isExpanded } });
       document.dispatchEvent(event);
     }
   }
@@ -182,17 +171,17 @@ export class ViewportService {
   toggleSidebar() {
     const viewport = document.querySelector('.viewport-wrapper');
 
-    if (viewport.classList.contains("toggled")) {
-      viewport.classList.remove("toggled");
-      //this.$rootScope.$broadcast("SideBarChanged");
-      var event = new CustomEvent("SideBarChanged", {});
+    if (viewport.classList.contains('toggled')) {
+      viewport.classList.remove('toggled');
+      // this.$rootScope.$broadcast("SideBarChanged");
+      const event = new CustomEvent('SideBarChanged', {});
       document.dispatchEvent(event);
       return true;
 
     } else {
-      viewport.classList.add("toggled");
-      //this.$rootScope.$broadcast("SideBarChanged");
-      var event = new CustomEvent("SideBarChanged", {});
+      viewport.classList.add('toggled');
+      // this.$rootScope.$broadcast("SideBarChanged");
+      const event = new CustomEvent('SideBarChanged', {});
       document.dispatchEvent(event);
       return false;
     }
@@ -282,9 +271,10 @@ export class ViewportService {
   }
 
   notifySubscribers(name, data) {
-    this.viewportSubscribers.forEach(function (callback) {
+    this.viewportSubscribers.forEach(callback => {
       callback({
-        eventName: name, value: data
+        eventName: name,
+        value: data,
       });
     });
   }
@@ -297,5 +287,4 @@ export class ViewportService {
   //     this.$rootScope.cardConfiguration = cardConfiguration;
   //   }
   // }
-
 }
