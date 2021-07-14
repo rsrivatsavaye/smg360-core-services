@@ -5,6 +5,7 @@ import * as EventNames from './contstants/event-names.constants';
 import { Views } from './enums/views.enum';
 import { Resolutions } from './enums/resolutions.enum';
 import { fromEvent } from 'rxjs';
+import { ViewportEvent } from './contstants/viewport-events.type';
 
 @Injectable({
   providedIn: 'root'
@@ -270,7 +271,7 @@ export class ViewportService {
     }
   }
 
-  notifySubscribers(name, data) {
+  notifySubscribers<T>(name: ViewportEvent, data: T) {
     this.viewportSubscribers.forEach(callback => {
       callback({
         eventName: name,
