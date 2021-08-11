@@ -22,7 +22,12 @@ export class PartialTranslateLoaderService {
     if(this.language){
       this.language = this.language.replace(/"/g,"");
      }
-     return this.http.get(url+`?language=${this.language}`).pipe(map(results=>{  
+     let extender = "?";
+     if(url.includes("?"))
+     {
+       extender = "&"
+     }
+     return this.http.get(`${url+extender}language=${this.language}`).pipe(map(results=>{  
       this.translate.setTranslation(this.language,results,true);
     }));
   }
