@@ -14,7 +14,7 @@ export class MenuItemMapper {
         this.populateTextKey(r,translationService);
         return r;
       });
-   
+
       /*
        * [AV-43/PBI 175770]
        * This has been added to allow for the reauthentication of an expired v5 user when
@@ -22,27 +22,28 @@ export class MenuItemMapper {
       */
       var links = returnItems.filter(m => m.menuTextTranslationKey === "MENU_NAV_V5_LINK");
       if (links && links.length === 1) {
-        const authorization: any = localStorageService.getObjectItem('ls.authorizationData');
+        // TECH DEBT: This check is for backwards compatability, fix me once there are no `ls.` references in consuming apps.
+        const authorization: any = localStorageService.getObjectItem('authorizationData') ?? localStorageService.getObjectItem('ls.authorizationData');
         var userName = "";
         var accessToken = authorization.token;
         var token = JSON.parse(window.atob(accessToken.split('.')[1]));
         userName = token.name;
         links[0].menuUrl = links[0].menuUrl + "?token=" + accessToken + "&username=" + userName;
       }
-  
+
       this.assignAnalyticsMetadataObjects(returnItems);
       return returnItems;
     }
-  
+
     static populateTextKey(item:MenuItem,translationService:TranslateService){
       item.menuText = translationService.instant(item.menuTextTranslationKey);
       if(item.menuItems){
         item.menuItems.forEach(i=>this.populateTextKey(i,translationService));
       }
     }
-  
+
     static settingsFilter(menuItem, settings) {
-  
+
       if (menuItem.menuTextTranslationKey === "DASHBOARDS" && !settings.leftMenuLinks.dashboard) { return false; }
       if (menuItem.menuTextTranslationKey === "COMMENT_REPORT" && !settings.leftMenuLinks.commentReport) { return false; }
       if (menuItem.menuTextTranslationKey === "V5_LINK" && !settings.leftMenuLinks.V5Link) { return false; }
@@ -59,13 +60,12 @@ export class MenuItemMapper {
         if (item.menuTextTranslationKey === "MENU_NAV_LOGOUT") { item.analyticsMetadataObject = this.createAnalyticsObject(analyticsMetadataObjects.labels.filterPanelLabels.navigation.logout); }
       });
     }
-  
+
     static createAnalyticsObject(label) {
       return {
         action: analyticsMetadataObjects.actions.filterPanelActions.selectNavigation,
         metadata: { category: analyticsMetadataObjects.categories.filterPanel, label: label }
       };
-  
+
     }
   }
-  
