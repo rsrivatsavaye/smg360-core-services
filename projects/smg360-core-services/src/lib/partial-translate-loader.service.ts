@@ -10,14 +10,16 @@ export class PartialTranslateLoaderService {
 
   language:string;
   constructor(private http:HttpClient,private translate:TranslateService){
-     this.language = localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
+     // TECH DEBT: This check is for backwards compatability, fix me once there are no `ls.` references in consuming apps.
+    this.language = localStorage.getItem('languageIso') ?? localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
+
      if(this.language){
       this.language = this.language.replace(/"/g,"");
      }
-     
+
      this.translate.use(this.language);
   }
-  
+
   addPart(url: string) {
     if(this.language){
       this.language = this.language.replace(/"/g,"");
@@ -27,7 +29,7 @@ export class PartialTranslateLoaderService {
      {
        extender = "&"
      }
-     return this.http.get(`${url+extender}language=${this.language}`).pipe(map(results=>{  
+     return this.http.get(`${url+extender}language=${this.language}`).pipe(map(results=>{
       this.translate.setTranslation(this.language,results,true);
     }));
   }
