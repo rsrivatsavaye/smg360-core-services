@@ -19,3 +19,5 @@ export * from './lib/user.service';
 export * from './lib/v5-authentication-refresh.service';
 export * from './lib/view.service';
 export * from './lib/viewport.service';
+export * from './lib/app-config.service';
+export * from './lib/app-feature-flag.service';
