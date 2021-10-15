@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { AppSettings, Settings } from './models/app-settings.model';
 import { EnvironmentType } from './enums/environment.enum';
+import { PROVIDE_NAME } from './contstants/provide.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppConfigService {
-  getConfig(environmentContent: string, environmentType: EnvironmentType): Settings {
-    if (!environmentContent) {
+  constructor(@Inject(PROVIDE_NAME.SMG360_CORE_CONFIG) private config: any) {
+  }
+  getConfig(environment: any, environmentType: EnvironmentType): Settings {
+    if (!environment) {
       return null;
     }
-    const jsonValues = JSON.parse(environmentContent) as AppSettings;
-    return environmentType === EnvironmentType.Production ? jsonValues.release : jsonValues.local;
+    return environmentType === EnvironmentType.Production ? environment.release : environment.local;
   }
 }

@@ -1,0 +1,3 @@
+export const PROVIDE_NAME = {
+    SMG360_CORE_CONFIG: "SMG360_CORE_CONFIG"
+}

@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { filter, map, pluck, tap } from 'rxjs/operators';
 import { AppConfigService } from './app-config.service';
 import { EnvironmentType } from './enums/environment.enum';
 

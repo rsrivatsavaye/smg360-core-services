@@ -1,6 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { AppConfigService } from './app-config.service';
+import { AppFeatureFlagService } from './app-feature-flag.service';
+import { PROVIDE_NAME } from './contstants/provide.constants';
 
 @NgModule({
   declarations: [],
@@ -12,8 +15,18 @@ import { TranslateModule } from '@ngx-translate/core';
   exports: [
     TranslateModule
   ],
-  providers:[
-    {provide:Window,useValue:window}
+  providers: [
+    AppConfigService,
+    AppFeatureFlagService,
+    { provide: Window, useValue: window }
   ]
 })
-export class Smg360CoreServicesModule { }
+
+export class Smg360CoreServicesModule {
+  static forRoot(config: any): ModuleWithProviders<Smg360CoreServicesModule> {
+    return {
+      ngModule: Smg360CoreServicesModule,
+      providers: [AppConfigService,AppFeatureFlagService, { provide: PROVIDE_NAME.SMG360_CORE_CONFIG, useValue: config }]
+    }
+  }
+}
