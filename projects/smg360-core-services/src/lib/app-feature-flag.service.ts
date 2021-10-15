@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AppConfigService } from './app-config.service';
+import { AppSettingsService } from './app-config.service';
 import { EnvironmentType } from './enums/environment.enum';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppFeatureFlagService {
-  constructor(private appConfigService: AppConfigService) {
+  constructor(private appConfigService: AppSettingsService) {
   }
 
   /**
@@ -14,8 +14,8 @@ export class AppFeatureFlagService {
    * @param featureName - case sensitive feature name from environment.json file
    * @returns a boolean indicating if the feature is enabled or not.
    */
-  isFeatureEnabled(featureName: string, environmentContent: string, environmentType: EnvironmentType): boolean {
-    const config = this.appConfigService.getConfig(environmentContent, environmentType);
+  isFeatureEnabled(featureName: string, environmentType: EnvironmentType): boolean {
+    const config = this.appConfigService.getConfig(environmentType);
     if (config) {
       const featureValue = config.features[featureName];
       if (!featureValue)

@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { AppFeatureFlagService } from './app-feature-flag.service';
-import { AppConfigService } from './app-config.service';
+import { AppSettingsService } from './app-config.service';
 import { of } from 'rxjs/internal/observable/of';
 
 describe('AppFeatureFlagService', () => {
@@ -14,7 +14,7 @@ describe('AppFeatureFlagService', () => {
     TestBed.configureTestingModule({
       providers: [
         HttpClientModule,
-        { provide: AppConfigService, useValue: appConfigService }
+        { provide: AppSettingsService, useValue: appConfigService }
       ]
     });
     service = TestBed.get(AppFeatureFlagService);

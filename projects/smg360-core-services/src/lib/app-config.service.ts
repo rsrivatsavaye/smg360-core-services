@@ -6,13 +6,13 @@ import { PROVIDE_NAME } from './contstants/provide.constants';
 @Injectable({
   providedIn: 'root'
 })
-export class AppConfigService {
-  constructor(@Inject(PROVIDE_NAME.SMG360_CORE_CONFIG) private config: any) {
+export class AppSettingsService {
+  constructor(@Inject(PROVIDE_NAME.SMG360_CORE_CONFIG) private environment: any) {
   }
-  getConfig(environment: any, environmentType: EnvironmentType): Settings {
-    if (!environment) {
+  getConfig(environmentType: EnvironmentType): Settings {
+    if (!this.environment) {
       return null;
     }
-    return environmentType === EnvironmentType.Production ? environment.release : environment.local;
+    return environmentType === EnvironmentType.Production ? this.environment.release : this.environment.local;
   }
 }
