@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 import { AppFeatureFlagService } from './app-feature-flag.service';
-import { AppSettingsService } from './app-config.service';
+import { AppSettingsService } from './app-settings.service';
 import { of } from 'rxjs/internal/observable/of';
 
 describe('AppFeatureFlagService', () => {

@@ -1,3 +1,9 @@
-export const PROVIDE_NAME = {
-    SMG360_CORE_CONFIG: "SMG360_CORE_CONFIG"
+import { InjectionToken } from '@angular/core';
+
+export interface IEnvironmentSettings {
+    production: boolean;
+
 }
+
+export const ENVIRONMENT_SETTINGS = new InjectionToken<IEnvironmentSettings>('Environment Settings');
+export const WINDOW_INJECTOR = new InjectionToken<Window>('Window');
