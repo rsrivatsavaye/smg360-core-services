@@ -1,0 +1,4 @@
+.vs
+coverage
+dist
+node_modules
