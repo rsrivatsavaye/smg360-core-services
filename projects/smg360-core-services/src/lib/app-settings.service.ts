@@ -12,7 +12,7 @@ import {
 })
 export class AppSettingsService {
   private isProduction = false;
-  private config: any;
+  private config: { [key: string]: any };
 
   // ENVIRONMENT_SETTINGS is the environment.js file injected into the DI system. 
   // It will only be used to determine if the application is running in production mode. 
@@ -35,7 +35,7 @@ export class AppSettingsService {
    */
   loadConfig(settingsFileName: string = 'environment.json') {
     const client = new HttpClient(this.httpBackend);
-    return client.get(settingsFileName).pipe(
+    return client.get<{ [key: string]: any }>(settingsFileName).pipe(
       map((appSettings: {release?: any, local?: any}) => {
         return this.isProduction ? appSettings?.release : appSettings?.local;
       }),
@@ -54,7 +54,7 @@ export class AppSettingsService {
    * 
    * @returns the application configuration cast to the desired type. 
    */
-  getConfig<T>() {
+  getConfig<T = {[key: string]: any }>() {
     return this.config as T;
   }
 
