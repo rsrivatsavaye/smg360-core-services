@@ -9,6 +9,7 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
+      require('karma-junit-reporter'),
       require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
@@ -21,7 +22,12 @@ module.exports = function (config) {
       reporters: [{type:'html'}, {type:'lcovonly'}, {type:'text-summary'},{type:'cobertura'} ],
       fixWebpackSourcePaths: true
     },
-    reporters: ['progress', 'kjhtml'],
+    junitReporter: {
+      outputDir: require('path').join(__dirname, '../../coverage/smg360-core-services'), 
+      outputFile: 'testresults.xml', // if included, results will be saved as $outputDir/$browserName/$outputFile
+      useBrowserName: false, // add browser name to report and classes names
+    },
+    reporters: ['progress', 'kjhtml','junit'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
