@@ -2,16 +2,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { ENVIRONMENT_SETTINGS } from './contstants/provide.constants';
+import { Smg360CoreServicesComponent } from './smg360-core-services.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    Smg360CoreServicesComponent
+  ],
   imports: [
     HttpClientModule,
     TranslateModule
   ],
   exports: [
+    Smg360CoreServicesComponent,
     TranslateModule
   ]
 })
