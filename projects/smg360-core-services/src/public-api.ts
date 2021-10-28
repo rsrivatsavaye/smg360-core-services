@@ -30,3 +30,4 @@ export * from './lib/models/auth-settings.model';
 export * from './lib/models/menu-items.model';
 export * from './lib/models/permission.model';
 export * from './lib/models/user-settings.model';
+export * from './lib/pendo-analytics.service';
