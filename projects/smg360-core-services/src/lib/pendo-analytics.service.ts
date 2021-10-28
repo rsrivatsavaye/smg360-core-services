@@ -20,7 +20,7 @@ export class Analytics {
 @Injectable({
   providedIn: 'root'
 })
-export class PendoAnalytics {
+export class PendoAnalyticsService {
   previous: Analytics;
   page: string;
   constructor(private _ngZone: NgZone) {}
