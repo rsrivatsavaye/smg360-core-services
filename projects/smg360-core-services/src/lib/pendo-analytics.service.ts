@@ -1,5 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
+
 declare const pendo: any;
+
 export class Analytics {
   userId: string;
   accountId: string;
@@ -9,14 +11,7 @@ export class Analytics {
   accountStatus: boolean;
   accountType: number;
 }
-/**
- * Proof of Technology
- * this service (Pendo) is being tested as a possible replacement/enhancement for Google Analytics
- * If this becomes standard we need to move this service to the core services library.
- *
- * @usages Reporting
- * @export
- */
+
 @Injectable({
   providedIn: 'root'
 })
