@@ -32,3 +32,4 @@ export * from './lib/models/permission.model';
 export * from './lib/models/user-settings.model';
 export * from './lib/pendo-analytics.service';
 export * from './lib/group.service';
+export * from './lib/models/group-list-view.model';
