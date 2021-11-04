@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Analytics } from 'dist/smg360-core-services/public-api';
-import { PendoAnalyticsService } from './pendo-analytics.service'
+import { Analytics, PendoAnalyticsService } from './pendo-analytics.service'
 
 describe('PendoAnalyticsService', () => {
   let pendoService: PendoAnalyticsService;
