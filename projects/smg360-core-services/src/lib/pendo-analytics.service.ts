@@ -66,7 +66,10 @@ export class PendoAnalyticsService {
                   attr: 'search',
                   action: 'AddTo',
                   data: () => {
-                    return { page: this.page };
+                    // An undefined page occurs on a page refresh before the Pendo service is re-instantiated.
+                    if (this.page) {
+                      return { page: this.page };
+                    }
                   }
                 }
               ]
