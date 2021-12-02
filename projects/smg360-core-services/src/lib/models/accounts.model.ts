@@ -1,74 +1,77 @@
 import { Account } from './account.model';
 
 export class Accounts {
-    accounts: Array<Account>;
-    constructor() {
-        this.accounts = [];
+  accounts: Array<Account>;
+  constructor() {
+    this.accounts = [];
+  }
+
+  static create() {
+    return new Accounts();
+  }
+
+  push(account) {
+    this.accounts.push(account);
+  }
+
+  add(id, name, type, isActive, classification) {
+    this.accounts.push(new Account(id, name, type, isActive, classification));
+  }
+
+  find(account) {
+    return this.accounts.filter(item => {
+      return account.id === item.id;
+    });
+  }
+
+  getAccountName(accountId) {
+    const matchingAccounts = this.accounts.filter(account => {
+      return account.id === accountId;
+    });
+
+    if (matchingAccounts.length === 0) {
+      return null;
     }
 
-    static create = function () {
-        return new Accounts();
-    };
+    return matchingAccounts[0].name;
+  }
 
-    push = function (account) {
-        this.accounts.push(account);
-    };
+  getAccountsWithMatchingNames(name) {
+    const matchingAccounts = new Accounts();
+    // TODO: change this to a filter??
+    this.accounts.forEach(account => {
+      if (account.name.toUpperCase().indexOf(name.toUpperCase()) === 0) {
+        matchingAccounts.accounts.push(account);
+      }
+    });
 
-    add = function (id, name, type, isActive, classification) {
-        this.accounts.push(new Account(id, name, type, isActive, classification));
-    };
+    return matchingAccounts;
+  }
 
-    find = function (account) {
-        return this.accounts.filter(function (item) {
-            return account.id === item.id;
-        });
-    };
+  accountIdExists(accountId) {
+    return (
+      this.accounts.filter(account => {
+        return account.id === accountId;
+      }).length > 0
+    );
+  }
 
-    getAccountName = function (accountId) {
-        const matchingAccounts = this.accounts.filter(function (account) {
-            return account.id === accountId;
-        });
+  setFavorites(favoriteIds) {
+    if (!Array.isArray(favoriteIds)) {
+      return;
+    }
 
-        if (matchingAccounts.length === 0)
-            return null;
+    for (let i = 0, len = this.accounts.length; i < len; i++) {
+      const currentAccount = this.accounts[i];
+      currentAccount.isFavorite = false;
 
-        return matchingAccounts[0].name;
-    };
-
-    getAccountsWithMatchingNames = function (name) {
-        var matchingAccounts = new Accounts();
-        //TODO: change this to a filter??
-        this.accounts.forEach(
-            (account) => {
-                if (account.name.toUpperCase().indexOf(name.toUpperCase()) === 0) {
-                    matchingAccounts.accounts.push(account);
-                }
-            });
-
-        return matchingAccounts;
-    };
-
-    accountIdExists = function (accountId) {
-        return this.accounts.filter(function (account) {
-            return account.id === accountId;
-        }).length >
-            0;
-    };
-
-    setFavorites = function (favoriteIds) {
-        if (!Array.isArray(favoriteIds)) return;
-
-        for (let i = 0, len = this.accounts.length; i < len; i++) {
-            const currentAccount = this.accounts[i];
-            currentAccount.isFavorite = false;
-
-            for (let j = 0, cnt = favoriteIds.length; j < cnt; j++) {
-                const currentFavoriteId = favoriteIds[j];
-                if (currentAccount.id === currentFavoriteId) {
-                    currentAccount.isFavorite = true;
-                    break;
-                }
-            }
+      for (let j = 0, cnt = favoriteIds.length; j < cnt; j++) {
+        const currentFavoriteId = favoriteIds[j];
+        if (currentAccount.id === currentFavoriteId) {
+          currentAccount.isFavorite = true;
+          break;
         }
-    };
+      }
+    }
+  }
 }
