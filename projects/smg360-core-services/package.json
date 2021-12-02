@@ -1,6 +1,6 @@
 {
   "name": "@smg/smg360-core-services",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "dependencies": {
     "tslib": "^2.0.0"
   },
