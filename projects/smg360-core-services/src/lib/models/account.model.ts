@@ -1,20 +1,22 @@
 export class Account {
-    public id: string;
-    public name?: string;
-    public nameKey?: string;
-    public type: any;
-    public isActive: boolean;
-    public isFavorite: boolean;
-    public sources: any;
-    public classification: any;
+  public id: string;
+  public name?: string;
+  public nameKey?: string;
+  public type: any;
+  public isActive: boolean;
+  public isFavorite: boolean;
+  public sources: any;
+  public classification: any;
 
-    constructor(_id: string, _name: string, _type: any, _isActive: boolean, _classification: any) {
-        this.id = _id;
-        this.name = _name;
-        this.type = _type;
-        this.isActive = _isActive;
-        this.isFavorite = false;
-        this.sources = {};
-        this.classification = _classification;
-    }
+  // TODO: This constructor could be changed to use the 'public id:string' syntax.  Or this class could be changed to an interface
+  // without a constructor.  
+  constructor(newId: string, newName: string, newType: any, newIsActive: boolean, newClassification: any) {
+    this.id = newId;
+    this.name = newName;
+    this.type = newType;
+    this.isActive = newIsActive;
+    this.isFavorite = false;
+    this.sources = {};
+    this.classification = newClassification;
+  }
 }

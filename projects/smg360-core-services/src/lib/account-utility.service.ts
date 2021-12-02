@@ -7,16 +7,14 @@ import { Account } from './models/account.model';
 })
 export class AccountUtilityService {
   public selectedAccount: Account;
-  constructor() {
-
-  }
+  constructor() {}
   getSelectedAccount() {
     return this.selectedAccount;
   }
   setSelectedAccount(account) {
     this.selectedAccount = account;
-    if (account.expirationDate && account.expirationDate < moment().add(1, "days").format()) {
-      window.location.href = "/account-expired.html";
+    if (account.expirationDate && account.expirationDate < moment().add(1, 'days').format()) {
+      window.location.href = '/account-expired.html';
     }
   }
 }
