@@ -7,6 +7,8 @@ import { AppSettingsService } from '../app-settings.service';
 /**
  * Cache service that can be used to store data in any manner. Currently, it will only clear expired keys on service
  * reload. Additional logic should be added to streamline the entry expiration process.
+ *
+ * A throttling mechanism exists and defaults to 60 seconds.
  */
 export abstract class BaseCacheService {
   /**
@@ -15,8 +17,8 @@ export abstract class BaseCacheService {
   ttl = 0;
 
   private throttleCache = new Map<string, {
-    timeoutFn: () => void,
-    data: Observable<any>
+    timeoutFn: void,
+    data$: Observable<any>
   }>();
 
   constructor(
@@ -47,15 +49,14 @@ export abstract class BaseCacheService {
     }
 
     if (cacheService.throttleCache.has(cacheKey)) {
-      return cacheService.throttleCache.get(cacheKey).data;
+      return cacheService.throttleCache.get(cacheKey).data$;
     } else {
       cacheService.throttleCache.set(cacheKey, {
-        timeoutFn: () => {setTimeout(() => {
+        timeoutFn: (() => {setTimeout(() => {
           cacheService.throttleCache.delete(cacheKey);
-        }, throttleTimeout)},
-        data: request$
-      })
-      cacheService.throttleCache.get(cacheKey).timeoutFn();
+        }, throttleTimeout)})(),
+        data$: request$
+      });
     }
 
     cacheService.save(cacheKey, request$);
