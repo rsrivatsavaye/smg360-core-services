@@ -4,6 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { PartialTranslateLoaderService } from './partial-translate-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { MockProvider } from 'ng-mocks';
+import { SessionCacheService } from './cache';
 
 describe('PartialtranslateLoaderService', () => {
   let service: PartialTranslateLoaderService;
@@ -12,7 +13,8 @@ describe('PartialtranslateLoaderService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-      MockProvider(TranslateService)
+        MockProvider(TranslateService),
+        MockProvider(SessionCacheService),
       ]
     });
     service = TestBed.inject(PartialTranslateLoaderService);
