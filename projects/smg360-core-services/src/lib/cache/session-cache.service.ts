@@ -11,7 +11,6 @@ import { AppSettingsService } from '../app-settings.service';
 })
 export class SessionCacheService extends BaseCacheService {
     private static readonly KEYS_KEY = 'session-storage-cached-keys';
-
     private keys: Array<string> = [];
 
     constructor(
@@ -64,10 +63,6 @@ export class SessionCacheService extends BaseCacheService {
     }
 
     storeEntry<T>(key: string, entry: CacheEntry<T>): void {
-        // entry.data.pipe(
-        //     tap(x => console.log("storeEntry: ", x)),
-        //     tap()
-        // );
         entry.data.subscribe(res => {
             this.updateStoredKeys(key, true);
             const lsEntry: SessionStorageCacheEntry<T> = {
@@ -76,7 +71,7 @@ export class SessionCacheService extends BaseCacheService {
             };
             // write the actual entry to sessionStorage
             sessionStorage.setItem(key, JSON.stringify(lsEntry));
-        })
+        });
     }
 
     protected allKeys(): Array<string> {
