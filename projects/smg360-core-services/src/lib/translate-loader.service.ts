@@ -92,7 +92,7 @@ export class TranslateLoaderService {
      * Adds the accountId
      */
     getAccount(accountId:string) {
-      return (accountId ? '/?accountId=' + accountId : '');
+      return (accountId ? '?accountId=' + accountId : '');
   }
 }
 
