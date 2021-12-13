@@ -4,6 +4,7 @@ import { CacheEntry } from './cache-entry.model';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AppSettingsService } from '../app-settings.service';
+import { AccountService } from '../account.service';
 
 export const CLEAR_ON_REDIRECT = new InjectionToken<boolean>('CLEAR_ON_REDIRECT');
 
@@ -15,10 +16,11 @@ export class MemoryCacheService extends BaseCacheService {
 
   constructor(
     _appConfigService: AppSettingsService,
+    _accountService: AccountService,
     router: Router,
     @Optional() @Inject(CLEAR_ON_REDIRECT) clearOnRedirect: boolean,
   ) {
-    super(_appConfigService);
+    super(_appConfigService, _accountService);
 
     if (clearOnRedirect) {
       router.events.pipe(
