@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AppSettingsService } from '../app-settings.service';
+import { AccountService } from '../account.service';
 
 @Injectable({
     providedIn: 'root'
@@ -15,8 +16,9 @@ export class SessionCacheService extends BaseCacheService {
 
     constructor(
         _appConfigService: AppSettingsService,
+        _accountService: AccountService,
     ) {
-        super(_appConfigService);
+        super(_appConfigService, _accountService);
 
         // grab them out of sessionStorage
         const rawKeys: string = sessionStorage.getItem(SessionCacheService.KEYS_KEY);

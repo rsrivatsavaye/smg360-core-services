@@ -3,6 +3,8 @@ import { CacheEntry } from './cache-entry.model';
 import { isObservable, Observable, of } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { AppSettingsService } from '../app-settings.service';
+import { AccountService } from '../account.service';
+import { Account } from '../models/account.model';
 
 /**
  * Cache service that can be used to store data in any manner. Currently, it will only clear expired keys on service
@@ -15,7 +17,6 @@ export abstract class BaseCacheService {
    * Cache time to live in milliseconds
    */
   ttl = 0;
-
   private throttleCache = new Map<string, {
     timeoutFn: void,
     data$: Observable<any>
@@ -23,6 +24,7 @@ export abstract class BaseCacheService {
 
   constructor(
     appConfigService: AppSettingsService,
+    public accountService: AccountService,
   ) {
     const config = appConfigService.getConfig();
     const cacheTimeout = config && config.timeoutSettings ? _.toNumber(config.timeoutSettings.cacheTimeout) : 0;
@@ -40,7 +42,8 @@ export abstract class BaseCacheService {
     keyPrefix: string = 'base-',
     throttleTimeout: number = 60000
   ): Observable<T> {
-    const cacheKey: string = keyPrefix + (typeof key === 'string' ? key : JSON.stringify(key));
+    const accountId = cacheService.accountService.getLastFetchedAccount()?.id ?? '';
+    const cacheKey: string = keyPrefix + accountId + (typeof key === 'string' ? key : JSON.stringify(key));
     const request$ = requestFactory().pipe(shareReplay(1));
 
     const data$: Observable<T> = cacheService.tryGet<T>(cacheKey);
