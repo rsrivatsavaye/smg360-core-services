@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AppSettingsService } from '../app-settings.service';
+import { AccountService } from '../account.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,8 +17,9 @@ export class LocalCacheService extends BaseCacheService {
 
   constructor(
     _appConfigService: AppSettingsService,
+    _accountService: AccountService,
   ) {
-    super(_appConfigService);
+    super(_appConfigService, _accountService);
 
     // grab them out of localStorage
     const rawKeys: string = localStorage.getItem(LocalCacheService.KEYS_KEY);

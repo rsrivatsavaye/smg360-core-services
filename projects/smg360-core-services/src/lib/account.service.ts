@@ -5,7 +5,7 @@ import { CacheType } from './enums/cacheType.enum';
 import { Observable, of, scheduled, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Accounts } from './models/accounts.model';
-import { Account } from "./models/account.model";
+import { Account } from './models/account.model';
 
 
 @Injectable({
@@ -13,6 +13,7 @@ import { Account } from "./models/account.model";
 })
 export class AccountService {
   BaseUrl: string = "";
+  private lastFetchedAccount: Account;
   constructor(private http: HttpClient, private cacheService: CacheService) {
 
   }
@@ -49,8 +50,13 @@ export class AccountService {
 
     return this.http.get<Account>(this.BaseUrl + `/api/account/${accountId}`).pipe(take(1), map((account: Account) => {
       this.cacheService.set(CacheType.Account, accountId, account);
+      this.lastFetchedAccount = account;
       return account;
     }));
+  }
+
+  getLastFetchedAccount() {
+    return this.lastFetchedAccount;
   }
 
   save(account: Account): Observable<Account> {
