@@ -1,15 +1,19 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { MockProvider } from 'ng-mocks';
-import { PartialTranslateLoaderService } from '../public-api';
+import {
+  AccountUtilityService,
+  AppSettingsService,
+  LocalStorageService,
+  PartialTranslateLoaderService,
+  PermissionService,
+  UserService
+} from '../public-api';
 import { CacheService } from './cache.service';
 import { CacheType } from './enums/cacheType.enum';
 import { TranslateLoaderService } from './translate-loader.service';
-import { TranslateService } from '@ngx-translate/core'
-import { UserService } from './user.service';
-import { PermissionService } from './permission.service';
-import { Observable } from 'rxjs';
-import { AccountUtilityService } from './account-utility.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Observable, of } from 'rxjs';
 
 describe('UserService', () => {
   let service: UserService;
@@ -61,7 +65,9 @@ describe('UserService', () => {
       MockProvider(TranslateLoaderService),
       MockProvider(PartialTranslateLoaderService),
       MockProvider(TranslateService),
-      MockProvider(AccountUtilityService)
+      MockProvider(AccountUtilityService),
+      MockProvider(AppSettingsService),
+      MockProvider(LocalStorageService)
       ]
     });
     service = TestBed.inject(UserService);
@@ -101,6 +107,11 @@ describe('UserService', () => {
     it('should have method to setAdminUser', function () {
       expect(service.setAdminUser).toBeDefined();
       expect(service.setAdminUser).toEqual(jasmine.any(Function));
+    });
+
+    it('should have method to initService', function () {
+      expect(service.initService).toBeDefined();
+      expect(service.initService).toEqual(jasmine.any(Function));
     });
   });
   var cacheService: CacheService;
@@ -233,7 +244,7 @@ describe('UserService', () => {
         expect(cacheService.get).toHaveBeenCalledTimes(1);
       });
     });
-    var translate:TranslateService;
+    var translate: TranslateService;
     describe('when MENU has been translated', function () {
 
       beforeEach(function () {
@@ -279,7 +290,7 @@ describe('UserService', () => {
             spyOn(accountUtilityService, "setSelectedAccount").and.callFake(() => undefined);
             const errorMessage = 'Bad Request';
             var errorEvnt = new ErrorEvent(errorMessage)
-            
+
             service.getCurrentUser().subscribe(result=>{
               // we should not enter here.
               expect(1).toBe(0);
@@ -334,5 +345,45 @@ describe('UserService', () => {
 
   });
 
-
+  describe('Init the service', () => {
+    let appSettingsService;
+    let localStorageService;
+    let token;
+    beforeEach(() => {
+      appSettingsService = TestBed.inject(AppSettingsService);
+      spyOn(appSettingsService, 'getSetting').and.returnValue({ internalUser: '1234' });
+      localStorageService = TestBed.inject(LocalStorageService);
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZ3JvdXBfaWQiOiIxMjM0In0.cwc6xDHOskYuzBV0QKS1c8Xrpzl-VZr9UOvOFYHXLiQ';
+    });
+    it('should success when current user is admin', () => {
+      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: true }));
+      service.initService().subscribe(result => {
+        expect(service.isAdmin).toEqual(true);
+      });
+    });
+    it('should success when current user is not a admin', () => {
+      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false }));
+      service.initService().subscribe(result => {
+        expect(service.isAdmin).toEqual(false);
+      });
+    });
+    it('should success when current user is a internal user', () => {
+      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false }));
+      service.initService().subscribe(result => {
+        expect(service.isInternalUser).toEqual(true);
+      });
+    });
+    it('should success when current user is not a internal user', () => {
+      spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false }));
+      // this token has group_id = 1235;
+      token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZ3JvdXBfaWQiOiIxMjM1In0.qb_6RtTWbjT-eTaLZiGRjX6ZgTYJYrSVDziYFsLN2aI';
+      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      service.initService().subscribe(result => {
+        expect(service.isInternalUser).toEqual(false);
+      });
+    });
+  });
 });
