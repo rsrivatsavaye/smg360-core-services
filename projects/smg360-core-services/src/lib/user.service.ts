@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
@@ -9,6 +9,10 @@ import { EntityType } from './enums/entity-type.enum';
 import { PermissionService } from './permission.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateLoaderService } from './translate-loader.service';
+import { UserContainer } from './models/user-container.model';
+import { UserExists } from './models/user-exists.model';
+import { UserDetails } from './models/user-details.model';
+import { CreateUserRequest } from './models/create-user-request.model';
 import { AppSettingsService } from './app-settings.service';
 import { LocalStorageService } from './local-storage.service';
 import jwt_decode from 'jwt-decode';
@@ -29,7 +33,9 @@ export class UserService {
     private translateLoaderService: TranslateLoaderService,
     private translate: TranslateService,
     private appSettingsService: AppSettingsService,
-    private localStorageService: LocalStorageService) { }
+    private localStorageService: LocalStorageService
+  ) {
+  }
 
   initService() {
     return this.getAdminUser().pipe(tap(user => {
@@ -48,11 +54,11 @@ export class UserService {
     const timezoneOffset = -(new Date('2015-01-01').getTimezoneOffset());
   }
 
-  getCachedUser() {
+  getCachedUser(): UserContainer {
     return this.cacheService.get(CacheType.UserMeta, 'current-user');
   }
 
-  getCachedAdminUser() {
+  getCachedAdminUser(): UserContainer {
     return this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
   }
 
@@ -64,7 +70,7 @@ export class UserService {
     this.cacheService.set(CacheType.UserMeta, this.adminUserCacheKey, user);
   }
 
-  getAdminUser() {
+  getAdminUser(): Observable<UserContainer> {
     let currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
     if (!currentUser) {
       let isAdmin = false;
@@ -77,7 +83,7 @@ export class UserService {
             }
             user.isAdmin = isAdmin;
             currentUser = user;
-            this.cacheService.set(CacheType.UserMeta, this.adminUserCacheKey, user);
+            this.setAdminUser(user);
             this.translateLoaderService.loadAdminTemplate();
             return user;
           }));
@@ -88,7 +94,7 @@ export class UserService {
     }
   }
 
-  getCurrentUser() {
+  getCurrentUser(): Observable<UserContainer> {
     let currentUser = this.getCachedUser();
 
     if (!currentUser) {
@@ -96,7 +102,7 @@ export class UserService {
         (user) => {
           currentUser = user;
 
-          if (user.accounts && user.accounts instanceof Object) {
+          if (user.accounts && user.accounts.constructor === Object) {
             const keys = Object.keys(user.accounts);
             const defaultUserAccount = user.accounts[keys[0]];
             if (defaultUserAccount) {
@@ -105,29 +111,31 @@ export class UserService {
                 this.setCurrentUser(user);
                 return user;
               }));
-            }
-            else{
+            } else {
               throw Error('No Accounts for user');
             }
-          } else{
+          } else {
             throw Error('No Accounts for user');
           }
         }));
 
     } else {
-      return new Observable((observer) => observer.next(currentUser));
+      return of(currentUser);
     }
   }
 
-  private getCurrent(): Observable<any> {
-    return this.http.get<any>('/api/user/current');
+  private getCurrent(): Observable<UserContainer> {
+    return this.http.get<UserContainer>('/api/user/current');
   }
 
-  getGroupUsers(groupId: string | number): Observable<any> {
-    return this.http.get<any>(`/api/user/groupUsers/${groupId}`);
+  getGroupUsers(groupId: string | number): Observable<UserExists> {
+    if (typeof groupId === 'string' && isNaN(Number(groupId))) {
+      console.warn('getGroupUsers called with invalid groupId');
+    }
+    return this.http.get<UserExists>(`/api/user/groupUsers/${groupId}`);
   }
 
-  createUsers(usersCreateRequest: any): Observable<any> {
-    return this.http.post<any>('/api/user/create', usersCreateRequest);
+  createUsers(usersCreateRequest: CreateUserRequest): Observable<UserDetails> {
+    return this.http.post<UserDetails>('/api/user/create', usersCreateRequest);
   }
 }

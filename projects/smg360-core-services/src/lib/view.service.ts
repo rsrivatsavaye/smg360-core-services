@@ -35,13 +35,15 @@ export class ViewService {
     return siteSettings;
 }
 
-checkAdminBanner(value){
-  if(this.cacheService){
-      let currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
-      if(!currentUser) return value;
-      return currentUser.isAdmin?false: value;
-  }else{
-      return false;
+checkAdminBanner(value) {
+  if (this.cacheService) {
+    const currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
+    if (!currentUser) {
+      return value;
+    }
+    return currentUser.isAdmin ? false : value;
+  } else {
+    return false;
   }
 }
 

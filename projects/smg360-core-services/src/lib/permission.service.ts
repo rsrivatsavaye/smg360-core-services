@@ -11,11 +11,12 @@ import { Permission } from './models/permission.model';
   providedIn: 'root'
 })
 export class PermissionService {
-  BaseUrl: string = "";
+  readonly BASE_URL: string = '';
+
   constructor(private http: HttpClient, private cacheService: CacheService) { }
 
   getGroupPermissions(groupId: string | number) {
-    return this.http.get(this.BaseUrl + `/api/permission?groupId=${groupId}`);
+    return this.http.get(this.BASE_URL + `/api/permission?groupId=${groupId}`);
   }
 
   getPermissions(entityType: EntityType, useCache: boolean) {
@@ -27,24 +28,25 @@ export class PermissionService {
       }
     }
 
-    return this.http.get<Array<Permission>>(this.BaseUrl + `/api/permission?entityType=${entityType}`).pipe(map((permissions: Array<Permission>) => {
-      this.cacheService.set(CacheType.Permissions, entityType, permissions);
-      return permissions;
-    }));
+    return this.http.get<Array<Permission>>(this.BASE_URL + `/api/permission?entityType=${entityType}`)
+      .pipe(map((permissions: Array<Permission>) => {
+        this.cacheService.set(CacheType.Permissions, entityType, permissions);
+        return permissions;
+      }));
   }
 
   getPermissionsByObjectId(entityType: EntityType, objectId: string | number) {
     return this.getPermissions(entityType, true).pipe(map((permissions: Array<Permission>) => {
-      var foundEntityPermission;
-      var foundObjectPermission;
+      let foundEntityPermission;
+      let foundObjectPermission;
 
-      for (let permissionIndex in permissions) {
+      for (const permissionIndex in permissions) {
         if (permissions.hasOwnProperty(permissionIndex)) {
           const permission = permissions[permissionIndex];
 
           if (objectId === permission.entityId && entityType === permission.entityType) {
             foundObjectPermission = permission;
-          } else if ((permission.entityId == null || permission.entityId === "") && entityType === permission.entityType) {
+          } else if ((permission.entityId == null || permission.entityId === '') && entityType === permission.entityType) {
             foundEntityPermission = permission;
           }
         }

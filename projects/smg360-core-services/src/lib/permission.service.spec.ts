@@ -97,7 +97,7 @@ describe('PermissionService', () => {
       service.getGroupPermissions(groupId).subscribe(permissions => {
         expect(permissions).toBe(moqData);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      var req = mockHttp.expectOne(service.BASE_URL + url);
       req.flush(moqData);
     });
   });
@@ -115,7 +115,7 @@ describe('PermissionService', () => {
         expect(permissions).toBe(moqData);
         expect(cacheService.set).toHaveBeenCalledTimes(1);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      var req = mockHttp.expectOne(service.BASE_URL + url);
       req.flush(moqData);
     });
 
@@ -130,7 +130,7 @@ describe('PermissionService', () => {
         expect(cacheService.get).toHaveBeenCalledTimes(1);
         expect(cacheService.set).toHaveBeenCalledTimes(0);
       });
-      mockHttp.expectNone(service.BaseUrl + url);
+      mockHttp.expectNone(service.BASE_URL + url);
     });
 
     it("should make a request when no cache and useCache flag is true", function () {
@@ -144,7 +144,7 @@ describe('PermissionService', () => {
         expect(cacheService.get).toHaveBeenCalledTimes(1);
         expect(cacheService.set).toHaveBeenCalledTimes(1);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      var req = mockHttp.expectOne(service.BASE_URL + url);
       req.flush(moqData);
     });
   });
@@ -165,7 +165,7 @@ describe('PermissionService', () => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
         expect(permission).toBe(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      var httpRequest = mockHttp.expectOne(service.BASE_URL + url);
       httpRequest.flush(moqData);
     });
 
@@ -181,7 +181,7 @@ describe('PermissionService', () => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
         expect(permission).toBe(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      var httpRequest = mockHttp.expectOne(service.BASE_URL + url);
       httpRequest.flush(moqData);
 
     });
@@ -197,7 +197,7 @@ describe('PermissionService', () => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
         expect(permission).toBe(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      var httpRequest = mockHttp.expectOne(service.BASE_URL + url);
       httpRequest.flush(moqData);
     });
 

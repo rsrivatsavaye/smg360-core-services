@@ -2,25 +2,25 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 import { CacheType } from './enums/cacheType.enum';
-import { Observable, of, scheduled, Subject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 import { Accounts } from './models/accounts.model';
 import { Account } from './models/account.model';
 
+export const ALL_ACCOUNTS_CACHE_KEY = 'all-accounts';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  BaseUrl: string = "";
+  BaseUrl: string = '';
   private lastFetchedAccount: Account;
-  constructor(private http: HttpClient, private cacheService: CacheService) {
 
+  constructor(private http: HttpClient, private cacheService: CacheService) {
   }
 
   getListing(): Observable<Accounts> {
-    const allAccountsCacheKey = 'all-accounts';
-    const cachedAccountList: Accounts = this.cacheService.get(CacheType.Account, allAccountsCacheKey);
+    const cachedAccountList: Accounts = this.cacheService.get(CacheType.Account, ALL_ACCOUNTS_CACHE_KEY);
 
     if (cachedAccountList && cachedAccountList.accounts) {
       return new Observable((observer) => observer.next(cachedAccountList));
@@ -28,15 +28,15 @@ export class AccountService {
     //
     return this.http.get<Array<Account>>(this.BaseUrl + '/api/account/listing')
       .pipe(take(1), map((accounts: Array<Account>) => {
-        var allAccounts = Accounts.create();
-        accounts.forEach(function (account) {
+        const allAccounts = Accounts.create();
+        accounts.forEach(account => {
           allAccounts.add(account.id, account.nameKey, account.type, account.isActive, account.classification);
         });
-        this.cacheService.set(CacheType.Account, allAccountsCacheKey, allAccounts);
+        this.cacheService.set(CacheType.Account, ALL_ACCOUNTS_CACHE_KEY, allAccounts);
         return allAccounts;
       }));
-
   }
+
   test() {
     return new Observable(obs => obs.next(1)).pipe(take(1), map((r: number) => r + 1));
   }
@@ -48,14 +48,16 @@ export class AccountService {
       return new Observable((observer) => observer.next(account));
     }
 
-    return this.http.get<Account>(this.BaseUrl + `/api/account/${accountId}`).pipe(take(1), map((account: Account) => {
-      this.cacheService.set(CacheType.Account, accountId, account);
-      this.lastFetchedAccount = account;
-      return account;
-    }));
+    return this.http.get<Account>(this.BaseUrl + `/api/account/${accountId}`).pipe(
+      take(1),
+      tap((acc: Account) => {
+        this.cacheService.set(CacheType.Account, accountId, acc);
+        this.lastFetchedAccount = acc;
+      }),
+    );
   }
 
-  getLastFetchedAccount() {
+  getLastFetchedAccount(): Account {
     return this.lastFetchedAccount;
   }
 
@@ -63,7 +65,7 @@ export class AccountService {
     return this.http.post<Account>(this.BaseUrl + '/api/account/save', account);
   }
 
-  invalidateCache() {
+  invalidateCache(): void {
     this.cacheService.clear(CacheType.Account);
   }
 

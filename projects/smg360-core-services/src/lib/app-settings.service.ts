@@ -14,10 +14,10 @@ export class AppSettingsService {
   private isProduction = false;
   private config: { [key: string]: any };
 
-  // ENVIRONMENT_SETTINGS is the environment.js file injected into the DI system. 
-  // It will only be used to determine if the application is running in production mode. 
+  // ENVIRONMENT_SETTINGS is the environment.js file injected into the DI system.
+  // It will only be used to determine if the application is running in production mode.
   // The HttpBackend has to be injected instead of HttpClient because
-  // injecting HttpClient will cause a cyclic dependency if an intercepter is also loaded.  
+  // injecting HttpClient will cause a cyclic dependency if an interceptor is also loaded.
   constructor(
     @Inject(ENVIRONMENT_SETTINGS) environmentSettings: IEnvironmentSettings,
     private httpBackend: HttpBackend
@@ -27,11 +27,11 @@ export class AppSettingsService {
   }
 
   /**
-   * Load config will be called on startup and it will look for a json file along 
-   * with the website contents.  The Json will contain a release and local node.  
-   * The production setting from the environment file will determine which one is used. 
-   * @param settingsFileName - The name or path of the file containing the settings.  Should be json format. 
-   * @returns A observable that will return a single object with the contents of the settings file.  
+   * Load config will be called on startup and it will look for a json file along
+   * with the website contents.  The Json will contain a release and local node.
+   * The production setting from the environment file will determine which one is used.
+   * @param settingsFileName - The name or path of the file containing the settings.  Should be json format.
+   * @returns an observable that will return a single object with the contents of the settings file
    */
   loadConfig(settingsFileName: string = 'environment.json') {
     const client = new HttpClient(this.httpBackend);
@@ -44,23 +44,21 @@ export class AppSettingsService {
       }),
       catchError((err) => {
         // This should 'eat' errors.  If no file is found a null will be returned
-        // and no error will be logged.  
+        // and no error will be logged.
         return of();
       })
     );
   }
 
   /**
-   * 
-   * @returns the application configuration cast to the desired type. 
+   * @returns the application configuration cast to the desired type.
    */
   getConfig<T = {[key: string]: any }>() {
     return this.config as T;
   }
 
   /**
-   * 
-   * @param key name of the setting to retrieve. 
+   * @param key name of the setting to retrieve.
    * @returns Get a single setting from the application configuration.  This may be a string or an object.
    */
   getSetting(key: string) {
@@ -68,8 +66,7 @@ export class AppSettingsService {
   }
 
   /**
-   * 
-   * @param key name of the setting to retrieve. 
+   * @param key name of the setting to retrieve.
    * @returns Get a string setting from the configuration.
    */
   getStringSetting(key: string) {
