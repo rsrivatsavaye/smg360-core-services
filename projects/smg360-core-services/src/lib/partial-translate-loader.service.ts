@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core'
-import { map } from 'rxjs/internal/operators/map';
+import { TranslateService } from '@ngx-translate/core';
+import { map } from 'rxjs/operators';
 import { SessionCacheService } from './cache/session-cache.service';
 
 @Injectable({
