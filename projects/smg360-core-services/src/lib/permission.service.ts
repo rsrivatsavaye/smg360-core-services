@@ -11,7 +11,7 @@ import { Permission } from './models/permission.model';
   providedIn: 'root'
 })
 export class PermissionService {
-  BaseUrl: string = "";
+  BaseUrl = '';
   constructor(private http: HttpClient, private cacheService: CacheService) { }
 
   getGroupPermissions(groupId: string | number) {
@@ -27,7 +27,8 @@ export class PermissionService {
       }
     }
 
-    return this.http.get<Array<Permission>>(this.BaseUrl + `/api/permission?entityType=${entityType}`).pipe(map((permissions: Array<Permission>) => {
+    return this.http.get<Array<Permission>>(this.BaseUrl + `/api/permission?entityType=${entityType}`)
+      .pipe(map((permissions: Array<Permission>) => {
       this.cacheService.set(CacheType.Permissions, entityType, permissions);
       return permissions;
     }));
@@ -35,25 +36,25 @@ export class PermissionService {
 
   getPermissionsByObjectId(entityType: EntityType, objectId: string | number) {
     return this.getPermissions(entityType, true).pipe(map((permissions: Array<Permission>) => {
-      var foundEntityPermission;
-      var foundObjectPermission;
+      const foundEntityPermissions = [];
+      const foundObjectPermissions = [];
 
-      for (let permissionIndex in permissions) {
+      for (const permissionIndex in permissions) {
         if (permissions.hasOwnProperty(permissionIndex)) {
           const permission = permissions[permissionIndex];
 
           if (objectId === permission.entityId && entityType === permission.entityType) {
-            foundObjectPermission = permission;
-          } else if ((permission.entityId == null || permission.entityId === "") && entityType === permission.entityType) {
-            foundEntityPermission = permission;
+            foundObjectPermissions.push(permission);
+          } else if ((permission.entityId == null || permission.entityId === '') && entityType === permission.entityType) {
+            foundEntityPermissions.push(permission);
           }
         }
       }
 
-      if (foundObjectPermission) {
-        return foundObjectPermission;
-      } else if (foundEntityPermission) {
-        return foundEntityPermission;
+      if (foundObjectPermissions.length) {
+        return this.combinePermissions(foundObjectPermissions);
+      } else if (foundEntityPermissions.length) {
+        return this.combinePermissions(foundEntityPermissions);
       } else {
         return {
           canCreate: false,
@@ -63,5 +64,27 @@ export class PermissionService {
         };
       }
     }));
+  }
+
+  private combinePermissions(permissions: Array<Permission>): any {
+    let canCreate = false;
+    let canRead = false;
+    let canUpdate = false;
+    let canDelete = false;
+    permissions.forEach(permission => {
+      canCreate = canCreate || permission.canCreate;
+      canRead = canRead || permission.canRead;
+      canUpdate = canUpdate || permission.canUpdate;
+      canDelete = canDelete || permission.canDelete;
+    });
+    return {
+      ...permissions[0],
+      ...{
+        canCreate,
+        canDelete,
+        canRead,
+        canUpdate
+      }
+    };
   }
 }

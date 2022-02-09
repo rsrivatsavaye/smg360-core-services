@@ -163,7 +163,7 @@ describe('PermissionService', () => {
       )[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
@@ -179,7 +179,7 @@ describe('PermissionService', () => {
       var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
@@ -195,7 +195,7 @@ describe('PermissionService', () => {
       var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
