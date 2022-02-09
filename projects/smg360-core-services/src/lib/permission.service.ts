@@ -66,7 +66,7 @@ export class PermissionService {
     }));
   }
 
-  private combinePermissions(permissions: Array<Permission>) {
+  private combinePermissions(permissions: Array<Permission>): any {
     let canCreate = false;
     let canRead = false;
     let canUpdate = false;
