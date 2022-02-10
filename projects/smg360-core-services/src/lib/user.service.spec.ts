@@ -14,6 +14,7 @@ import { CacheType } from './enums/cacheType.enum';
 import { TranslateLoaderService } from './translate-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
+import { Permission } from './models/permission.model';
 
 describe('UserService', () => {
   let service: UserService;
@@ -37,18 +38,18 @@ describe('UserService', () => {
       }
     }
   };
-  function getMockUserPermission() {
+  function getMockUserPermission(): Observable<Permission> {
     const permission = {
       canUpdate: false
-    };
+    } as Permission;
 
     return new Observable((observer) => observer.next(permission));
   }
 
-  function getMockAdminPermission() {
+  function getMockAdminPermission(): Observable<Permission> {
     const permission = {
       canUpdate: true
-    };
+    } as Permission;
     return new Observable((observer) => observer.next(permission));
 
   }
