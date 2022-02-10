@@ -34,7 +34,7 @@ export class PermissionService {
     }));
   }
 
-  getPermissionsByObjectId(entityType: EntityType, objectId: string | number) {
+  getPermissionsByObjectId(entityType: EntityType, objectId: string | number): Observable<Permission> {
     return this.getPermissions(entityType, true).pipe(map((permissions: Array<Permission>) => {
       const foundEntityPermissions = [];
       const foundObjectPermissions = [];
@@ -61,12 +61,12 @@ export class PermissionService {
           canRead: false,
           canUpdate: false,
           canDelete: false
-        };
+        } as Permission;
       }
     }));
   }
 
-  private combinePermissions(permissions: Array<Permission>): any {
+  private combinePermissions(permissions: Array<Permission>): Permission {
     let canCreate = false;
     let canRead = false;
     let canUpdate = false;

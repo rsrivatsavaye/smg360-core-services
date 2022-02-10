@@ -4,6 +4,7 @@ import { CacheService } from './cache.service';
 import { EntityType } from './enums/entity-type.enum';
 
 import { PermissionService } from './permission.service';
+import { Permission } from "./models/permission.model";
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -215,7 +216,7 @@ describe('PermissionService', () => {
           canRead: false,
           canUpdate: false,
           canDelete: false
-        });
+        } as Permission);
       });
     });
   });
