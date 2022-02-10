@@ -28,18 +28,6 @@
             "tsConfig": "projects/smg360-core-services/tsconfig.spec.json",
             "karmaConfig": "projects/smg360-core-services/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/smg360-core-services/tsconfig.lib.json",
-              "projects/smg360-core-services/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     }
