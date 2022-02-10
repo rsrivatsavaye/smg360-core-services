@@ -4,6 +4,7 @@ import { CacheService } from './cache.service';
 import { EntityType } from './enums/entity-type.enum';
 
 import { PermissionService } from './permission.service';
+import { Permission } from "./models/permission.model";
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -163,7 +164,7 @@ describe('PermissionService', () => {
       )[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
@@ -179,7 +180,7 @@ describe('PermissionService', () => {
       var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
@@ -195,7 +196,7 @@ describe('PermissionService', () => {
       var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
       var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
@@ -215,7 +216,7 @@ describe('PermissionService', () => {
           canRead: false,
           canUpdate: false,
           canDelete: false
-        });
+        } as Permission);
       });
     });
   });
