@@ -15,5 +15,11 @@ export enum EntityType {
     Attribute = 13,
     AttributeScale = 14,
     CaseTypeMetadata = 15,
-    ScriptedResponse = 16
+    ScriptedResponse = 16,
+    AlertTypeMetadata = 17,
+    GlobalMeasure = 18,
+    Ontology = 19,
+    StatisticalSignificance = 20,
+    IgnoreMinimumResponse = 21,
+    CaseRemoval = 22,
 }
