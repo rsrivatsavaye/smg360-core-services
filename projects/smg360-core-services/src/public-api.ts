@@ -23,7 +23,7 @@ export * from './lib/app-settings.service';
 export * from './lib/app-feature-flag.service';
 export * from './lib/contstants/provide.constants';
 export * from './lib/app-initializer';
-export * from './lib/enums/entity-type.enum'
+export * from './lib/enums/entity-type.enum';
 export * from './lib/models/account.model';
 export * from './lib/models/accounts.model';
 export * from './lib/models/auth-settings.model';
