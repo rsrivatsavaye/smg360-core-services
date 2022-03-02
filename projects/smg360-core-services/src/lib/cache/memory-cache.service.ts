@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, InjectionToken, NgZone, Optional } from '@angular/core';
 import { BaseCacheService } from './base-cache.service';
 import { CacheEntry } from './cache-entry.model';
 import { NavigationEnd, Router } from '@angular/router';
@@ -18,9 +18,10 @@ export class MemoryCacheService extends BaseCacheService {
     _appConfigService: AppSettingsService,
     _accountService: AccountService,
     router: Router,
+    _ngZone: NgZone,
     @Optional() @Inject(CLEAR_ON_REDIRECT) clearOnRedirect: boolean,
   ) {
-    super(_appConfigService, _accountService);
+    super(_appConfigService, _accountService, _ngZone);
 
     if (clearOnRedirect) {
       router.events.pipe(

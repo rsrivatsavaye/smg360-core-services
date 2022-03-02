@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BaseCacheService } from './base-cache.service';
 import { CacheEntry, SessionStorageCacheEntry } from './cache-entry.model';
 import * as _ from 'lodash';
@@ -17,8 +17,9 @@ export class SessionCacheService extends BaseCacheService {
     constructor(
         _appConfigService: AppSettingsService,
         _accountService: AccountService,
+        _ngZone: NgZone
     ) {
-        super(_appConfigService, _accountService);
+        super(_appConfigService, _accountService, _ngZone);
 
         // grab them out of sessionStorage
         const rawKeys: string = sessionStorage.getItem(SessionCacheService.KEYS_KEY);
