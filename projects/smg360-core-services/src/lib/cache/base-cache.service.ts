@@ -24,7 +24,7 @@ export abstract class BaseCacheService {
   }>();
 
   constructor(
-    public appConfigService: AppSettingsService,
+    appConfigService: AppSettingsService,
     public accountService: AccountService,
   ) {
     const config = appConfigService.getConfig();
