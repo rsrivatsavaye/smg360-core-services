@@ -16,7 +16,6 @@ export class PartialTranslateLoaderService {
     private sessionCacheService: SessionCacheService,
     private ngZone: NgZone
   ){
-    this.ngZone = ngZone;
      // TECH DEBT: This check is for backwards compatability, fix me once there are no `ls.` references in consuming apps.
     this.language = localStorage.getItem('languageIso') ?? localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
 

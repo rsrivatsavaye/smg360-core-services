@@ -58,7 +58,6 @@ export abstract class BaseCacheService {
     } else {
       cacheService.throttleCache.set(cacheKey, {
         timeoutFn: (() => {
-          // test
           ngZone.runOutsideAngular(() => {
             setTimeout(() => {
               cacheService.throttleCache.delete(cacheKey);

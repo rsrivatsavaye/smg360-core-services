@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, NgZone, Optional } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { BaseCacheService } from './base-cache.service';
 import { CacheEntry } from './cache-entry.model';
 import { NavigationEnd, Router } from '@angular/router';

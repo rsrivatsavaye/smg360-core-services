@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BaseCacheService } from './base-cache.service';
 import { CacheEntry, LocalStorageCacheEntry } from './cache-entry.model';
 import * as _ from 'lodash';
@@ -17,7 +17,7 @@ export class LocalCacheService extends BaseCacheService {
 
   constructor(
     _appConfigService: AppSettingsService,
-    _accountService: AccountService
+    _accountService: AccountService,
   ) {
     super(_appConfigService, _accountService);
 
