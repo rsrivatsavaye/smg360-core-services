@@ -17,10 +17,9 @@ export class LocalCacheService extends BaseCacheService {
 
   constructor(
     _appConfigService: AppSettingsService,
-    _accountService: AccountService,
-    _ngZone: NgZone
+    _accountService: AccountService
   ) {
-    super(_appConfigService, _accountService, _ngZone);
+    super(_appConfigService, _accountService);
 
     // grab them out of localStorage
     const rawKeys: string = localStorage.getItem(LocalCacheService.KEYS_KEY);

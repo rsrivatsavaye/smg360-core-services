@@ -23,14 +23,10 @@ export abstract class BaseCacheService {
     data$: Observable<any>
   }>();
 
-  static _ngZone: NgZone;
-
   constructor(
     public appConfigService: AppSettingsService,
     public accountService: AccountService,
-    private _ngZone: NgZone,
   ) {
-    this._ngZone = _ngZone;
     const config = appConfigService.getConfig();
     const cacheTimeout = config && config.timeoutSettings ? _.toNumber(config.timeoutSettings.cacheTimeout) : 0;
     this.ttl = typeof cacheTimeout === 'number' && isFinite(cacheTimeout) ? cacheTimeout : 0;
@@ -45,7 +41,8 @@ export abstract class BaseCacheService {
     cacheService: BaseCacheService,
     key: string | any,
     keyPrefix: string = 'base-',
-    throttleTimeout: number = 60000
+    throttleTimeout: number = 60000,
+    ngZone: NgZone
   ): Observable<T> {
     const accountId = cacheService.accountService.getLastFetchedAccount()?.id ?? '';
     const cacheKey: string = keyPrefix + accountId + (typeof key === 'string' ? key : JSON.stringify(key));
@@ -62,7 +59,7 @@ export abstract class BaseCacheService {
       cacheService.throttleCache.set(cacheKey, {
         timeoutFn: (() => {
           // test
-          BaseCacheService._ngZone.runOutsideAngular(() => {
+          ngZone.runOutsideAngular(() => {
             setTimeout(() => {
               cacheService.throttleCache.delete(cacheKey);
             }, throttleTimeout)

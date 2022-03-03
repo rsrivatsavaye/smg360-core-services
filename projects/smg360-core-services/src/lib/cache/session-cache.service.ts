@@ -16,10 +16,9 @@ export class SessionCacheService extends BaseCacheService {
 
     constructor(
         _appConfigService: AppSettingsService,
-        _accountService: AccountService,
-        _ngZone: NgZone
+        _accountService: AccountService
     ) {
-        super(_appConfigService, _accountService, _ngZone);
+        super(_appConfigService, _accountService);
 
         // grab them out of sessionStorage
         const rawKeys: string = sessionStorage.getItem(SessionCacheService.KEYS_KEY);

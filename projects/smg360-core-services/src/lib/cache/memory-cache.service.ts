@@ -18,10 +18,9 @@ export class MemoryCacheService extends BaseCacheService {
     _appConfigService: AppSettingsService,
     _accountService: AccountService,
     router: Router,
-    _ngZone: NgZone,
     @Optional() @Inject(CLEAR_ON_REDIRECT) clearOnRedirect: boolean,
   ) {
-    super(_appConfigService, _accountService, _ngZone);
+    super(_appConfigService, _accountService);
 
     if (clearOnRedirect) {
       router.events.pipe(
