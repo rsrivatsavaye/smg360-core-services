@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core'
 import { map } from 'rxjs/internal/operators/map';
 import { SessionCacheService } from './cache/session-cache.service';
@@ -10,7 +10,12 @@ import { SessionCacheService } from './cache/session-cache.service';
 export class PartialTranslateLoaderService {
 
   language:string;
-  constructor(private http:HttpClient,private translate:TranslateService, private sessionCacheService: SessionCacheService){
+  constructor(
+    private http:HttpClient,
+    private translate:TranslateService,
+    private sessionCacheService: SessionCacheService,
+    private ngZone: NgZone
+  ){
      // TECH DEBT: This check is for backwards compatability, fix me once there are no `ls.` references in consuming apps.
     this.language = localStorage.getItem('languageIso') ?? localStorage.getItem('ls.languageIso') ?? translate.getBrowserCultureLang();
 
@@ -37,7 +42,9 @@ export class PartialTranslateLoaderService {
       () => request$,
       this.sessionCacheService,
       url,
-      'translate-add-part-'
+      'translate-add-part-',
+      60000,
+      this.ngZone
     ).pipe(map(results => {
       this.translate.setTranslation(this.language, results, true);
       return results;
