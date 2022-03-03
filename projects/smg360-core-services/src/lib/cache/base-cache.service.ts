@@ -5,6 +5,7 @@ import { shareReplay } from 'rxjs/operators';
 import { AppSettingsService } from '../app-settings.service';
 import { AccountService } from '../account.service';
 import { Account } from '../models/account.model';
+import { NgZone } from '@angular/core';
 
 /**
  * Cache service that can be used to store data in any manner. Currently, it will only clear expired keys on service
@@ -40,7 +41,8 @@ export abstract class BaseCacheService {
     cacheService: BaseCacheService,
     key: string | any,
     keyPrefix: string = 'base-',
-    throttleTimeout: number = 60000
+    throttleTimeout: number = 60000,
+    ngZone: NgZone
   ): Observable<T> {
     const accountId = cacheService.accountService.getLastFetchedAccount()?.id ?? '';
     const cacheKey: string = keyPrefix + accountId + (typeof key === 'string' ? key : JSON.stringify(key));
@@ -55,9 +57,13 @@ export abstract class BaseCacheService {
       return cacheService.throttleCache.get(cacheKey).data$;
     } else {
       cacheService.throttleCache.set(cacheKey, {
-        timeoutFn: (() => {setTimeout(() => {
-          cacheService.throttleCache.delete(cacheKey);
-        }, throttleTimeout)})(),
+        timeoutFn: (() => {
+          ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+              cacheService.throttleCache.delete(cacheKey);
+            }, throttleTimeout)
+          })
+        })(),
         data$: request$
       });
     }
