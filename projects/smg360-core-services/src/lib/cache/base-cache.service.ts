@@ -18,15 +18,15 @@ export abstract class BaseCacheService {
    * Cache time to live in milliseconds
    */
   ttl = 0;
-  private throttleCache = new Map<string, {
-    timeoutFn: void,
-    data$: Observable<any>
-  }>();
+  private throttleCache = new Map<
+    string,
+    {
+      timeoutFn: void;
+      data$: Observable<any>;
+    }
+  >();
 
-  constructor(
-    appConfigService: AppSettingsService,
-    public accountService: AccountService,
-  ) {
+  constructor(appConfigService: AppSettingsService, public accountService: AccountService, public ngZone: NgZone) {
     const config = appConfigService.getConfig();
     const cacheTimeout = config && config.timeoutSettings ? _.toNumber(config.timeoutSettings.cacheTimeout) : 0;
     this.ttl = typeof cacheTimeout === 'number' && isFinite(cacheTimeout) ? cacheTimeout : 0;
@@ -41,8 +41,7 @@ export abstract class BaseCacheService {
     cacheService: BaseCacheService,
     key: string | any,
     keyPrefix: string = 'base-',
-    throttleTimeout: number = 60000,
-    ngZone: NgZone
+    throttleTimeout: number = 60000
   ): Observable<T> {
     const accountId = cacheService.accountService.getLastFetchedAccount()?.id ?? '';
     const cacheKey: string = keyPrefix + accountId + (typeof key === 'string' ? key : JSON.stringify(key));
@@ -58,11 +57,11 @@ export abstract class BaseCacheService {
     } else {
       cacheService.throttleCache.set(cacheKey, {
         timeoutFn: (() => {
-          ngZone.runOutsideAngular(() => {
+          cacheService.ngZone.runOutsideAngular(() => {
             setTimeout(() => {
               cacheService.throttleCache.delete(cacheKey);
-            }, throttleTimeout)
-          })
+            }, throttleTimeout);
+          });
         })(),
         data$: request$
       });
@@ -87,8 +86,8 @@ export abstract class BaseCacheService {
     const isAnObservable = isObservable(data);
 
     const value: CacheEntry<unknown> = {
-      data: isAnObservable ? data as Observable<unknown> : of(data),
-      expiration: new Date().getTime() + this.ttl,
+      data: isAnObservable ? (data as Observable<unknown>) : of(data),
+      expiration: new Date().getTime() + this.ttl
     };
 
     this.storeEntry(key, value);
