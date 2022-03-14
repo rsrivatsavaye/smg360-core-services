@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, InjectionToken, NgZone, Optional } from '@angular/core';
 import { BaseCacheService } from './base-cache.service';
 import { CacheEntry } from './cache-entry.model';
 import { NavigationEnd, Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { AccountService } from '../account.service';
 export const CLEAR_ON_REDIRECT = new InjectionToken<boolean>('CLEAR_ON_REDIRECT');
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MemoryCacheService extends BaseCacheService {
   private cache = new Map<string, CacheEntry<unknown>>();
@@ -17,15 +17,14 @@ export class MemoryCacheService extends BaseCacheService {
   constructor(
     _appConfigService: AppSettingsService,
     _accountService: AccountService,
+    _ngZone: NgZone,
     router: Router,
-    @Optional() @Inject(CLEAR_ON_REDIRECT) clearOnRedirect: boolean,
+    @Optional() @Inject(CLEAR_ON_REDIRECT) clearOnRedirect: boolean
   ) {
-    super(_appConfigService, _accountService);
+    super(_appConfigService, _accountService, _ngZone);
 
     if (clearOnRedirect) {
-      router.events.pipe(
-        filter(event => event instanceof NavigationEnd),
-      ).subscribe(() => this.resetCache());
+      router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => this.resetCache());
     }
   }
 
@@ -48,10 +47,10 @@ export class MemoryCacheService extends BaseCacheService {
     return entry as CacheEntry<T>;
   }
 
-  retrieveEntry<T> (key: string): CacheEntry<T> | null {
+  retrieveEntry<T>(key: string): CacheEntry<T> | null {
     // return this.cache.get(key) ?? null
     const entry: CacheEntry<unknown> = this.cache.get(key);
-    return entry ? entry as CacheEntry<T> : null;
+    return entry ? (entry as CacheEntry<T>) : null;
   }
 
   storeEntry<T>(key: string, entry: CacheEntry<T>): void {
