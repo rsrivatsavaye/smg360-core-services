@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/internal/operators/map';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Views } from './enums/views.enum';
 import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
@@ -27,16 +26,16 @@ export class AuthenticationService {
   }
 
   clearClient() {
-    this.localStorageService.remove("client");
-    this.localStorageService.remove("authorizationData");
+    this.localStorageService.remove('client');
+    this.localStorageService.remove('authorizationData');
   }
 
   logOut(v5Logoutcheck?) {
-    console.info("AuthenticationService - logout() called.");
-    const authData: any = this.localStorageService.getObjectItem("authorizationData");
+    console.info('AuthenticationService - logout() called.');
+    const authData: any = this.localStorageService.getObjectItem('authorizationData');
 
     if (v5Logoutcheck) {
-      this.localStorageService.remove("authorizationData");
+      this.localStorageService.remove('authorizationData');
       this.v5Logout();
     }
 
@@ -52,7 +51,7 @@ export class AuthenticationService {
         this.clearClient();
       }
       else {
-        this.localStorageService.remove("authorizationData");
+        this.localStorageService.remove('authorizationData');
       }
     } else {
       this.v5Logout();
@@ -60,7 +59,7 @@ export class AuthenticationService {
   }
 
   is360User() {
-    const client = this.localStorageService.getItem("client");
+    const client = this.localStorageService.getItem('client');
     return client ? client === AuthSettings.smg360Client : true;
   }
 
@@ -69,13 +68,13 @@ export class AuthenticationService {
   }
 
   refreshToken(refreshV5) {
-    const authData = this.localStorageService.getObjectItem("authorizationData") as any;
+    const authData = this.localStorageService.getObjectItem('authorizationData') as any;
     if (authData) {
-      return this.http.post("/api/authentication/token/refresh", {
+      return this.http.post('/api/authentication/token/refresh', {
         refreshToken: authData.refresh_token
       }).pipe(map((refreshedToken: any) => {
-        this.localStorageService.remove("authorizationData");
-        this.localStorageService.setObjectItem("authorizationData", {
+        this.localStorageService.remove('authorizationData');
+        this.localStorageService.setObjectItem('authorizationData', {
           token: refreshedToken.accessToken,
           refresh_token: refreshedToken.refreshToken
         });
@@ -87,12 +86,12 @@ export class AuthenticationService {
         //  this.refreshPromise = null;
       }, catchError(error => {
         //this.logOut();
-        throw new Error("Error refreshing token");
+        throw new Error('Error refreshing token');
       })
       ));
 
     } else {
-      throw new Error("Error refreshing token authData not present in local storage");
+      throw new Error('Error refreshing token authData not present in local storage');
     }
   }
 
@@ -100,7 +99,7 @@ export class AuthenticationService {
     // tell v5 to logout for pod and embedded modes
     const viewServiceMode = this.viewService.getMode();
     if (viewServiceMode === Views.Pod || viewServiceMode === Views.Embedded) {
-      window.top.postMessage("logout360Redirect", "*");
+      window.top.postMessage('logout360Redirect', '*');
     }
   }
 
