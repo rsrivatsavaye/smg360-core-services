@@ -19,7 +19,6 @@ export class PermissionService {
   }
 
   getPermissions(entityType: EntityType, useCache: boolean) {
-
     if (useCache) {
       const cachedPermissions: Array<Permission> = this.cacheService.get(CacheType.Permissions, entityType) || [];
       if (cachedPermissions.length !== 0) {
@@ -27,11 +26,12 @@ export class PermissionService {
       }
     }
 
-    return this.http.get<Array<Permission>>(this.BaseUrl + `/api/permission?entityType=${entityType}`)
-      .pipe(map((permissions: Array<Permission>) => {
-      this.cacheService.set(CacheType.Permissions, entityType, permissions);
-      return permissions;
-    }));
+    return this.http.get<Array<Permission>>(this.BaseUrl + `/api/permission?entityType=${entityType}`).pipe(
+      map((permissions: Array<Permission>) => {
+        this.cacheService.set(CacheType.Permissions, entityType, permissions);
+        return permissions;
+      }),
+    );
   }
 
   getPermissionsByObjectId(entityType: EntityType, objectId: string | number): Observable<Permission> {
