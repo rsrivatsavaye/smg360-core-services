@@ -1,5 +1,5 @@
 import { TranslateService } from '@ngx-translate/core';
-import { LocalStorageService } from '../../public-api';
+import { AuthenticationService, LocalStorageService } from '../../public-api';
 import { MenuItem } from '../models/menu-items.model';
 import { ViewService } from '../view.service';
 import * as analyticsMetadataObjects from '../contstants/analytics-metadata.constants'
@@ -23,7 +23,7 @@ export class MenuItemMapper {
       var links = returnItems.filter(m => m.menuTextTranslationKey === "MENU_NAV_V5_LINK");
       if (links && links.length === 1) {
         // TECH DEBT: This check is for backwards compatability, fix me once there are no `ls.` references in consuming apps.
-        const authorization: any = localStorageService.getObjectItem('authorizationData') ?? localStorageService.getObjectItem('ls.authorizationData');
+        const authorization: any = localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY) ?? localStorageService.getObjectItem('ls.authorizationData');
         var userName = "";
         var accessToken = authorization.token;
         var token = JSON.parse(window.atob(accessToken.split('.')[1]));

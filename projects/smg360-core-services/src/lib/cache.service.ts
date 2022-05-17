@@ -1,12 +1,5 @@
 import { Injectable } from '@angular/core';
 import { CacheType } from './enums/cacheType.enum';
-import { UserContainer } from './models/user-container';
-import { Not } from './models/not-type';
-import { Account } from './models/account.model';
-import { Accounts } from './models/accounts.model';
-import { Permission } from './models/permission.model';
-
-const ALL_ACCOUNTS_CACHE_KEY = 'all-accounts';
 
 @Injectable({
   providedIn: 'root',
@@ -16,21 +9,15 @@ export class CacheService {
   public cache: any = [];
 
   constructor() {
-
   }
 
-  get(cacheType: CacheType.UserMeta, cacheKey: string | number): UserContainer;
-  get(cacheType: CacheType.Account, cacheKey: typeof ALL_ACCOUNTS_CACHE_KEY): Accounts;
-  get(cacheType: CacheType.Account, cacheKey: string | number): Account;
-  get(cacheType: CacheType.Permissions, cacheKey: string | number): Permission[];
-  get(cacheType: CacheType, cacheKey: string | number): any;
   /**
    * Gets a cached item.
    * @param cacheType The cache type to be searched for the desired entry.
    * @param cacheKey The key identifying the desired entry.
    * @returns undefined if no cached entry is found; otherwise, the data cached for the given cache type and key.
    */
-  get(cacheType: CacheType, cacheKey: string | number): any { // TODO make return type be unknown. shouldn't be any
+  get<T = any>(cacheType: CacheType, cacheKey: string | number): T {
     const cacheContext = this.cache[cacheType];
     if (cacheContext) {
       return cacheContext[cacheKey];
@@ -53,12 +40,7 @@ export class CacheService {
    * @param cacheKey cache key used to identify the entry
    * @param cacheValue object to be cached
    */
-  set(cacheType: CacheType.UserMeta, cacheKey: string | number, cacheValue: UserContainer);
-  set(cacheType: CacheType.Account, cacheKey: 'all-accounts', cacheValue: Accounts);
-  set(cacheType: CacheType.Account, cacheKey: string | number, cacheValue: Account);
-  set(cacheType: CacheType.Permissions, cacheKey: string | number, cacheValue: Permission[]);
-  set(cacheType: CacheType, cacheKey: string | number, cacheValue: any);
-  set(cacheType: CacheType, cacheKey: string | number, cacheValue: any) {
+  set<T = any>(cacheType: CacheType, cacheKey: string | number, cacheValue: T) {
     if (!this.cache[cacheType]) {
       this.cache[cacheType] = {};
     }
