@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cacheType.enum';
+import { CacheType } from './enums/cache-type.enum';
 import { Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { Accounts } from './models/accounts.model';

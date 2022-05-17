@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cacheType.enum';
+import { CacheType } from './enums/cache-type.enum';
 import { EntityType } from './enums/entity-type.enum';
 import { PermissionService } from './permission.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,9 @@ import jwt_decode from 'jwt-decode';
 import { UserContainer } from './models/user-container';
 import { UserExists } from './models/user-exists';
 import { UserDetails } from './models/user-details';
+import { Permission } from './models/permission.model';
+import { isObject } from './utils/object-utils';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,9 +43,8 @@ export class UserService {
   initService() {
     return this.getAdminUser().pipe(tap(user => {
       this.isAdmin = user.isAdmin as boolean;
-      const auth: any = this.localStorageService.getObjectItem('authorizationData');
       const groupIdCanAccessToAdmin = [this.appSettingsService.getSetting('groups').internalUser];
-      const jwtDecoded: any = jwt_decode(auth.token);
+      const jwtDecoded = this.getToken();
       // get list group id from token claim, if the user have only one group the type of the group_id will be a string,
       // otherwise it will be string array
       const jwtGroup = jwtDecoded.group_id ? (typeof (jwtDecoded.group_id) === 'string'
@@ -73,9 +75,9 @@ export class UserService {
   }
 
   getAdminUser(): Observable<UserContainer> {
-    let currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
+    const currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
     if (currentUser) {
-      return new Observable((observer) => observer.next(currentUser));
+      return of(currentUser);
     }
 
     let isAdmin = false;
@@ -83,33 +85,32 @@ export class UserService {
     return this.getCurrent().pipe(
       take(1),
       switchMap((user: UserContainer) => {
-        return this.permissionService.getPermissionsByObjectId(EntityType.Account, null).pipe(map((permission) => {
-          if (permission.canUpdate) {
-            isAdmin = true;
-          }
-          user.isAdmin = isAdmin;
-          currentUser = user;
-          this.setAdminUser(user);
-          this.translateLoaderService.loadAdminTemplate();
-          return user;
-        }));
+        return this.permissionService.getPermissionsByObjectId(EntityType.Account, null).pipe(
+          map((permission: Permission) => {
+            if (permission.canUpdate) {
+              isAdmin = true;
+            }
+            user.isAdmin = isAdmin;
+            this.setAdminUser(user);
+            this.translateLoaderService.loadAdminTemplate();
+            return user;
+          }),
+        );
       }),
     );
   }
 
   getCurrentUser(): Observable<UserContainer> {
-    let currentUser = this.getCachedUser();
-
+    const currentUser = this.getCachedUser();
     if (currentUser) {
       return of(currentUser);
     }
+
     return this.getCurrent().pipe(
       take(1),
-      switchMap((user) => {
-        currentUser = user;
-
+      switchMap((user: UserContainer) => {
         const keys = Object.keys(user.accounts ?? {});
-        if (user.accounts && user.accounts instanceof Object && keys.length !== 0 && user.accounts[keys[0]]) {
+        if (isObject(user.accounts) && keys.length !== 0 && user.accounts[keys[0]]) {
           const defaultUserAccount = user.accounts[keys[0]];
           this.accountUtilityService.setSelectedAccount(defaultUserAccount.account);
           return this.translateLoaderService.loadAccountTemplate(defaultUserAccount.account.id)
@@ -124,8 +125,8 @@ export class UserService {
     );
   }
 
-  private getCurrent(): Observable<UserContainer> {
-    return this.http.get<any>('/api/user/current');
+  getAuthClientId(): string {
+    return this.getToken().client_id;
   }
 
   getGroupUsers(groupId: string | number): Observable<UserExists[]> {
@@ -134,5 +135,14 @@ export class UserService {
 
   createUsers(usersCreateRequest: any): Observable<UserDetails[]> {
     return this.http.post<any>('/api/user/create', usersCreateRequest);
+  }
+
+  private getCurrent(): Observable<UserContainer> {
+    return this.http.get<any>('/api/user/current');
+  }
+
+  private getToken(): any {
+    const auth: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    return jwt_decode(auth.token);
   }
 }
