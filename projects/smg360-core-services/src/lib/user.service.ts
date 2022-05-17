@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 import { EntityType } from './enums/entity-type.enum';
 import { PermissionService } from './permission.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,9 +12,6 @@ import { TranslateLoaderService } from './translate-loader.service';
 import { AppSettingsService } from './app-settings.service';
 import { LocalStorageService } from './local-storage.service';
 import jwt_decode from 'jwt-decode';
-import { UserContainer } from './models/user-container';
-import { UserExists } from './models/user-exists';
-import { UserDetails } from './models/user-details';
 import { Permission } from './models/permission.model';
 import { isObject } from './utils/object-utils';
 import { AuthenticationService } from './authentication.service';
@@ -58,23 +55,23 @@ export class UserService {
     const timezoneOffset = -(new Date('2015-01-01').getTimezoneOffset());
   }
 
-  getCachedUser(): UserContainer {
+  getCachedUser() {
     return this.cacheService.get(CacheType.UserMeta, this.userCacheKey);
   }
 
-  getCachedAdminUser(): UserContainer {
+  getCachedAdminUser() {
     return this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
   }
 
-  setCurrentUser(user: UserContainer) {
+  setCurrentUser(user) {
     this.cacheService.set(CacheType.UserMeta, this.userCacheKey, user);
   }
 
-  setAdminUser(user: UserContainer) {
+  setAdminUser(user) {
     this.cacheService.set(CacheType.UserMeta, this.adminUserCacheKey, user);
   }
 
-  getAdminUser(): Observable<UserContainer> {
+  getAdminUser() {
     const currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
     if (currentUser) {
       return of(currentUser);
@@ -84,7 +81,7 @@ export class UserService {
 
     return this.getCurrent().pipe(
       take(1),
-      switchMap((user: UserContainer) => {
+      switchMap((user) => {
         return this.permissionService.getPermissionsByObjectId(EntityType.Account, null).pipe(
           map((permission: Permission) => {
             if (permission.canUpdate) {
@@ -100,7 +97,7 @@ export class UserService {
     );
   }
 
-  getCurrentUser(): Observable<UserContainer> {
+  getCurrentUser() {
     const currentUser = this.getCachedUser();
     if (currentUser) {
       return of(currentUser);
@@ -108,7 +105,7 @@ export class UserService {
 
     return this.getCurrent().pipe(
       take(1),
-      switchMap((user: UserContainer) => {
+      switchMap((user) => {
         const keys = Object.keys(user.accounts ?? {});
         if (isObject(user.accounts) && keys.length !== 0 && user.accounts[keys[0]]) {
           const defaultUserAccount = user.accounts[keys[0]];
@@ -129,15 +126,15 @@ export class UserService {
     return this.getToken().client_id;
   }
 
-  getGroupUsers(groupId: string | number): Observable<UserExists[]> {
+  getGroupUsers(groupId: string | number): Observable<any> {
     return this.http.get<any>(`/api/user/groupUsers/${groupId}`);
   }
 
-  createUsers(usersCreateRequest: any): Observable<UserDetails[]> {
+  createUsers(usersCreateRequest: any): Observable<any> {
     return this.http.post<any>('/api/user/create', usersCreateRequest);
   }
 
-  private getCurrent(): Observable<UserContainer> {
+  private getCurrent(): Observable<any> {
     return this.http.get<any>('/api/user/current');
   }
 

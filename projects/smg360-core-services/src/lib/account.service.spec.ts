@@ -5,7 +5,7 @@ import { AccountService } from './account.service';
 import { CacheService } from './cache.service';
 import { Accounts } from './models/accounts.model';
 import { Account } from './models/account.model';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 
 describe('AccountService', () => {
   let service: AccountService;

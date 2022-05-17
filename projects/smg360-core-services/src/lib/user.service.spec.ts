@@ -10,7 +10,7 @@ import {
   UserService
 } from '../public-api';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 import { TranslateLoaderService } from './translate-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';

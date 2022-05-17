@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 
 describe('Service: CacheService', () => {
 
