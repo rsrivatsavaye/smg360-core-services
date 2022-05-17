@@ -12,6 +12,7 @@ import { ViewService } from './view.service';
   providedIn: 'root'
 })
 export class AuthenticationService {
+  static readonly AUTH_DATA_KEY = 'authorizationData';
 
   constructor(
     private viewService: ViewService,
@@ -27,15 +28,15 @@ export class AuthenticationService {
 
   clearClient() {
     this.localStorageService.remove('client');
-    this.localStorageService.remove('authorizationData');
+    this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
   }
 
   logOut(v5Logoutcheck?) {
     console.info('AuthenticationService - logout() called.');
-    const authData: any = this.localStorageService.getObjectItem('authorizationData');
+    const authData: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
 
     if (v5Logoutcheck) {
-      this.localStorageService.remove('authorizationData');
+      this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
       this.v5Logout();
     }
 
@@ -51,7 +52,7 @@ export class AuthenticationService {
         this.clearClient();
       }
       else {
-        this.localStorageService.remove('authorizationData');
+        this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
       }
     } else {
       this.v5Logout();
@@ -68,13 +69,13 @@ export class AuthenticationService {
   }
 
   refreshToken(refreshV5) {
-    const authData = this.localStorageService.getObjectItem('authorizationData') as any;
+    const authData = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY) as any;
     if (authData) {
       return this.http.post('/api/authentication/token/refresh', {
         refreshToken: authData.refresh_token
       }).pipe(map((refreshedToken: any) => {
-        this.localStorageService.remove('authorizationData');
-        this.localStorageService.setObjectItem('authorizationData', {
+        this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
+        this.localStorageService.setObjectItem(AuthenticationService.AUTH_DATA_KEY, {
           token: refreshedToken.accessToken,
           refresh_token: refreshedToken.refreshToken
         });
