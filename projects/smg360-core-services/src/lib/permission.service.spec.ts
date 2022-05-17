@@ -124,7 +124,6 @@ describe('PermissionService', () => {
       useCache = true;
       const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
       const cacheService: CacheService = TestBed.inject(CacheService);
-      // @ts-expect-error
       spyOn(cacheService, 'get').and.callFake(() => moqCacheData);
       spyOn(cacheService, 'set').and.callFake(() => []);
       service.getPermissions(entityType, useCache).subscribe(permissions => {

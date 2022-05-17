@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { map } from 'rxjs/operators';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 import { EntityType } from './enums/entity-type.enum';
 import { Permission } from './models/permission.model';
 

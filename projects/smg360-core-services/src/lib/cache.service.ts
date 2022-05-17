@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class CacheService {
    * @param cacheKey The key identifying the desired entry.
    * @returns undefined if no cached entry is found; otherwise, the data cached for the given cache type and key.
    */
-  get<T = any>(cacheType: CacheType, cacheKey: string | number): T {
+  get(cacheType, cacheKey) {
     const cacheContext = this.cache[cacheType];
     if (cacheContext) {
       return cacheContext[cacheKey];
@@ -30,7 +30,7 @@ export class CacheService {
    * @param cacheType The cache type to be searched for the desired entry
    * @returns A map of all cached entries
    */
-  getCache(cacheType: CacheType): { [key: string]: unknown } {
+  getCache(cacheType) {
     return this.cache[cacheType];
   }
 
@@ -40,7 +40,7 @@ export class CacheService {
    * @param cacheKey cache key used to identify the entry
    * @param cacheValue object to be cached
    */
-  set<T = any>(cacheType: CacheType, cacheKey: string | number, cacheValue: T) {
+  set(cacheType, cacheKey, cacheValue) {
     if (!this.cache[cacheType]) {
       this.cache[cacheType] = {};
     }
@@ -52,7 +52,7 @@ export class CacheService {
    * Clears a cache for the given type.
    * @param cacheType type of the cache to be cleared
    */
-  clear(cacheType: CacheType) {
+  clear(cacheType) {
     this.cache[cacheType] = {};
   }
 
