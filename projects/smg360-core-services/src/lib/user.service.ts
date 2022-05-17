@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cacheType.enum';
+import { CacheType } from './enums/cache-type.enum';
 import { EntityType } from './enums/entity-type.enum';
 import { PermissionService } from './permission.service';
 import { TranslateService } from '@ngx-translate/core';

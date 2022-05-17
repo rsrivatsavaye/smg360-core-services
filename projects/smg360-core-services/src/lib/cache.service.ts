@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CacheType } from './enums/cacheType.enum';
+import { CacheType } from './enums/cache-type.enum';
 
 @Injectable({
   providedIn: 'root',
