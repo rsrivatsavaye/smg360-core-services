@@ -5,7 +5,7 @@ import { AccountService } from './account.service';
 import { CacheService } from './cache.service';
 import { Accounts } from './models/accounts.model';
 import { Account } from './models/account.model';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 
 describe('AccountService', () => {
   let service: AccountService;
@@ -93,7 +93,6 @@ describe('AccountService', () => {
 
       it('should not make request when cache in cache', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // @ts-expect-error
         spyOn(cacheService, 'get').and.callFake(() => getAccountsModel());
         spyOn(cacheService, 'set').and.callFake(() => []);
 
@@ -126,7 +125,6 @@ describe('AccountService', () => {
 
       it('should not make request when cached', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // @ts-expect-error
         spyOn(cacheService, 'get').and.callFake(() => mockAllAccounts[0]);
         spyOn(cacheService, 'set').and.callFake(() => []);
 
@@ -154,7 +152,6 @@ describe('AccountService', () => {
     describe(':: invalidateCache', () => {
       it('should clear account cache', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // tslint:disable-next-line:variable-name
         spyOn(cacheService, 'clear').and.callFake((_cacheType) => { });
         service.invalidateCache();
 

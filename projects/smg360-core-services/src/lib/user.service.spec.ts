@@ -10,7 +10,7 @@ import {
   UserService
 } from '../public-api';
 import { CacheService } from './cache.service';
-import { CacheType } from './enums/cache-type.enum';
+import { CacheType } from './enums/cacheType.enum';
 import { TranslateLoaderService } from './translate-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
@@ -158,7 +158,6 @@ describe('UserService', () => {
     });
     it('should check cache', () => {
       cacheService = TestBed.inject(CacheService);
-      // @ts-expect-error
       spyOn(cacheService, 'get').and.callFake(() => user as UserContainer);
       spyOn(cacheService, 'set').and.callFake(() => []);
       service.getAdminUser().subscribe(result => {
@@ -245,7 +244,6 @@ describe('UserService', () => {
 
     it('should check cache', () => {
       cacheService = TestBed.inject(CacheService);
-      // @ts-expect-error
       spyOn(cacheService, 'get').and.callFake(() => user);
       spyOn(cacheService, 'set').and.callFake(() => []);
       service.getCurrentUser().subscribe(result => {
