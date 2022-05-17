@@ -93,7 +93,6 @@ describe('AccountService', () => {
 
       it('should not make request when cache in cache', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // @ts-expect-error
         spyOn(cacheService, 'get').and.callFake(() => getAccountsModel());
         spyOn(cacheService, 'set').and.callFake(() => []);
 
@@ -126,7 +125,6 @@ describe('AccountService', () => {
 
       it('should not make request when cached', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // @ts-expect-error
         spyOn(cacheService, 'get').and.callFake(() => mockAllAccounts[0]);
         spyOn(cacheService, 'set').and.callFake(() => []);
 
@@ -154,7 +152,6 @@ describe('AccountService', () => {
     describe(':: invalidateCache', () => {
       it('should clear account cache', () => {
         const cacheService: CacheService = TestBed.inject(CacheService);
-        // tslint:disable-next-line:variable-name
         spyOn(cacheService, 'clear').and.callFake((_cacheType) => { });
         service.invalidateCache();
 

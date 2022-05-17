@@ -158,7 +158,6 @@ describe('UserService', () => {
     });
     it('should check cache', () => {
       cacheService = TestBed.inject(CacheService);
-      // @ts-expect-error
       spyOn(cacheService, 'get').and.callFake(() => user as UserContainer);
       spyOn(cacheService, 'set').and.callFake(() => []);
       service.getAdminUser().subscribe(result => {
@@ -245,7 +244,6 @@ describe('UserService', () => {
 
     it('should check cache', () => {
       cacheService = TestBed.inject(CacheService);
-      // @ts-expect-error
       spyOn(cacheService, 'get').and.callFake(() => user);
       spyOn(cacheService, 'set').and.callFake(() => []);
       service.getCurrentUser().subscribe(result => {
