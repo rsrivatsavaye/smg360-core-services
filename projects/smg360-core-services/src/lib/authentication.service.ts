@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, map } from 'rxjs/operators';
+import { CookieService } from './cookie.service';
 import { Views } from './enums/views.enum';
 import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
@@ -19,7 +20,9 @@ export class AuthenticationService {
     private v5AuthenticationRefreshService: V5AuthenticationRefreshService,
     private localStorageService: LocalStorageService,
     private locationService: LocationService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private cookieService: CookieService
+    ) { }
 
 
   auth360() {
@@ -33,9 +36,13 @@ export class AuthenticationService {
 
   logOut(v5Logoutcheck?) {
     console.info('AuthenticationService - logout() called.');
-    const authData: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    //const authData: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    const authData: any = this.cookieService.getAuthToken();
+
+
 
     if (v5Logoutcheck) {
+      // TODO need to remove the cookie
       this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
       this.v5Logout();
     }
@@ -74,6 +81,7 @@ export class AuthenticationService {
       return this.http.post('/api/authentication/token/refresh', {
         refreshToken: authData.refresh_token
       }).pipe(map((refreshedToken: any) => {
+        // need to remove the cookie
         this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
         this.localStorageService.setObjectItem(AuthenticationService.AUTH_DATA_KEY, {
           token: refreshedToken.accessToken,
