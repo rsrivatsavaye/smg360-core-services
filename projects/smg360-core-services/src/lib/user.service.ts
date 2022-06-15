@@ -15,6 +15,7 @@ import jwt_decode from 'jwt-decode';
 import { Permission } from './models/permission.model';
 import { isObject } from './utils/object-utils';
 import { AuthenticationService } from './authentication.service';
+import { CookieService } from './cookie.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +34,8 @@ export class UserService {
     private translateLoaderService: TranslateLoaderService,
     private translate: TranslateService,
     private appSettingsService: AppSettingsService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private cookieService: CookieService
   ) {
   }
 
@@ -139,7 +141,7 @@ export class UserService {
   }
 
   private getToken(): any {
-    const auth: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    const auth: any = this.cookieService.getAuthToken();
     return jwt_decode(auth.token);
   }
 }

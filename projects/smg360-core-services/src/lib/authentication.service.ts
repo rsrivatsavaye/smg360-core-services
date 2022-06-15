@@ -7,6 +7,7 @@ import { LocationService } from './location.service';
 import { AuthSettings } from './models/auth-settings.model';
 import { V5AuthenticationRefreshService } from './v5-authentication-refresh.service';
 import { ViewService } from './view.service';
+import { CookieService } from './cookie.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,9 @@ export class AuthenticationService {
     private v5AuthenticationRefreshService: V5AuthenticationRefreshService,
     private localStorageService: LocalStorageService,
     private locationService: LocationService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private cookieService: CookieService
+  ) { }
 
 
   auth360() {
@@ -33,7 +36,7 @@ export class AuthenticationService {
 
   logOut(v5Logoutcheck?) {
     console.info('AuthenticationService - logout() called.');
-    const authData: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    const authData: any = this.cookieService.getAuthToken();
 
     if (v5Logoutcheck) {
       this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
