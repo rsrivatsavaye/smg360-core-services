@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { CookieService as Cookie } from 'ngx-cookie-service';
+import { CookieOptions, CookieService as CookieSvc } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class CookieService {
 
   constructor(
-    private cookieService: Cookie,
+    private cookieService: CookieSvc,
   ) { }
 
   deleteAllCookies() {
@@ -18,29 +19,20 @@ export class CookieService {
     this.cookieService.delete(cookieName);
   }
 
+  getAllCookies() {
+    return this.cookieService.getAll();
+  }
+
+  getAuthToken() {
+    return JSON.parse(this.getCookie('authorizationData'));
+  }
+
   getCookie(cookieName: string) {
     const cookie = this.cookieService.get(cookieName);
     return cookie;
   }
 
-  // getCookie(cname) {
-  //   const name = `${cname}=`;
-  //   const decodedCookie = decodeURIComponent(document.cookie);
-  //   const ca = decodedCookie.split(';');
-  //   // tslint:disable-next-line:prefer-for-of
-  //   for (let i = 0; i < ca.length; i++) {
-  //     let c = ca[i];
-  //     while (c.charAt(0) === ' ') {
-  //       c = c.substring(1);
-  //     }
-  //     if (c.indexOf(name) === 0) {
-  //       return c.substring(name.length, c.length);
-  //     }
-  //   }
-  //   return '';
-  // }
-
-  getAuthToken() {
-    return JSON.parse(this.getCookie('authorizationData'));
+  setCookie(cookieName: string, cookieValue: string, cookieOptions: CookieOptions) {
+    this.cookieService.set(cookieName, cookieValue, cookieOptions);
   }
 }
