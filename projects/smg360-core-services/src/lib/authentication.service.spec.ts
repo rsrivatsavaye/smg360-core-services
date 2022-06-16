@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { MockProvider } from 'ng-mocks';
 import { AuthenticationService } from './authentication.service';
 import { CacheService } from './cache.service';
+import { CookieService } from './cookie.service';
 import { Views } from './enums/views.enum';
-import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
 import { V5AuthenticationRefreshService } from './v5-authentication-refresh.service';
 import { ViewService } from './view.service';
@@ -53,7 +53,7 @@ describe('AuthenticationService', () => {
 
   let v5AuthenticationRefreshService: V5AuthenticationRefreshService;
   describe("when logging out", () => {
-    let localStorageService: LocalStorageService;
+    let cookieService: CookieService;
     let locationService: LocationService;
     let viewService: ViewService;
     beforeEach(() => {
@@ -70,56 +70,51 @@ describe('AuthenticationService', () => {
       "refresh_token": "myRefreshToken_ c6d0515dcf670b7a8b",
       "client": "SMG360"
     };
-    describe("and local storage does not contain authorization data", () => {
+    describe("and cookie service does not contain authorization data", () => {
       beforeEach(() => {
-        localStorageService = TestBed.inject(LocalStorageService);
-        spyOn(localStorageService, 'getObjectItem').and.callFake((value: string) => { return undefined });
-        spyOn(localStorageService, "setObjectItem").and.callFake(() => { });
-        spyOn(localStorageService, "remove").and.callFake(() => { });
-
+        cookieService = TestBed.inject(CookieService);
+        cookieService = TestBed.inject(CookieService);
+        spyOn(cookieService, 'deleteCookie').and.callFake(() => { });
+        spyOn(cookieService, 'getAuthToken').and.callFake(() => { return undefined });
       });
 
-      it("should get authorization data from local storage", () => {
+      it("should get authorization data from cookie service", () => {
         service.logOut();
-        expect(localStorageService.getObjectItem).toHaveBeenCalledWith("authorizationData");
+        expect(cookieService.getAuthToken).toHaveBeenCalled();
       });
 
-      it("should not attempt to remove authorization data from local storage", () => {
+      it("should not attempt to remove authorization data from cookie service", () => {
         service.logOut();
-        expect(localStorageService.remove).not.toHaveBeenCalled();
+        expect(cookieService.deleteCookie).not.toHaveBeenCalled();
       });
     });
 
-    describe("and local storage contains authorization data", () => {
+    describe("and cookie service contains authorization data", () => {
       beforeEach(() => {
-        localStorageService = TestBed.inject(LocalStorageService);
-        spyOn(localStorageService, 'getObjectItem').and.callFake((value: string) => { return mockAuthData });
-        spyOn(localStorageService, "setObjectItem").and.callFake(() => { });
-        spyOn(localStorageService, "remove").and.callFake(() => { });
-
+        cookieService = TestBed.inject(CookieService);
+        spyOn(cookieService, 'getAuthToken').and.callFake(() => { return mockAuthData });
+        spyOn(cookieService, 'deleteCookie').and.callFake(() => { });
       });
 
-      it("should get authorization data from local storage", () => {
+      it("should get authorization data from cookie service", () => {
         service.logOut();
-        expect(localStorageService.getObjectItem).toHaveBeenCalledWith("authorizationData");
+        expect(cookieService.getAuthToken).toHaveBeenCalled();
       });
 
-      it("should not attempt to remove authorization data from local storage in full view mode", () => {
+      it("should not attempt to remove authorization data from cookie service in full view mode", () => {
         viewService = TestBed.inject(ViewService);
         spyOn(viewService, "getMode").and.callFake(() => Views.Full);
         service.logOut();
-        expect(localStorageService.remove).toHaveBeenCalledWith("authorizationData");
+        expect(cookieService.deleteCookie).toHaveBeenCalledWith("authorizationData");
       });
 
-      it("should not attempt to remove authorization data from local storage in embedded mode", () => {
+      it("should not attempt to remove authorization data from cookie service in embedded mode", () => {
         viewService = TestBed.inject(ViewService);
         spyOn(viewService, "getMode").and.callFake(() => Views.Embedded);
 
         service.logOut();
-        expect(localStorageService.remove).toHaveBeenCalledWith("authorizationData");
+        expect(cookieService.deleteCookie).toHaveBeenCalledWith("authorizationData");
       });
     });
   });
-
-
 });
