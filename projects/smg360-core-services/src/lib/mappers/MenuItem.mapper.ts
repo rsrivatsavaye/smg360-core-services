@@ -2,11 +2,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService, LocalStorageService } from '../../public-api';
 import { MenuItem } from '../models/menu-items.model';
 import { ViewService } from '../view.service';
+import { CookieService } from '../cookie.service';
 import * as analyticsMetadataObjects from '../contstants/analytics-metadata.constants'
 
 export class MenuItemMapper {
 
-    static map(items: Array<MenuItem>, viewService: ViewService, localStorageService: LocalStorageService,translationService:TranslateService): Array<MenuItem> {
+  static map(items: Array<MenuItem>, viewService: ViewService, localStorageService: LocalStorageService, translationService: TranslateService, cookieService: CookieService): Array<MenuItem> {
       var settings = viewService.getCurrentViewFeatures();
       var returnItems = [];
       returnItems = items.filter(r => this.settingsFilter(r, settings)).map(r => {

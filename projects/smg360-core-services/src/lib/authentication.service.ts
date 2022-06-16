@@ -7,6 +7,7 @@ import { LocationService } from './location.service';
 import { AuthSettings } from './models/auth-settings.model';
 import { V5AuthenticationRefreshService } from './v5-authentication-refresh.service';
 import { ViewService } from './view.service';
+import { CookieService } from './cookie.service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,9 @@ export class AuthenticationService {
     private v5AuthenticationRefreshService: V5AuthenticationRefreshService,
     private localStorageService: LocalStorageService,
     private locationService: LocationService,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private cookieService: CookieService
+  ) { }
 
 
   auth360() {
@@ -28,15 +31,15 @@ export class AuthenticationService {
 
   clearClient() {
     this.localStorageService.remove('client');
-    this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
+    this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
   }
 
   logOut(v5Logoutcheck?) {
     console.info('AuthenticationService - logout() called.');
-    const authData: any = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY);
+    const authData: any = this.cookieService.getAuthToken();
 
     if (v5Logoutcheck) {
-      this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
+      this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
       this.v5Logout();
     }
 
@@ -52,7 +55,7 @@ export class AuthenticationService {
         this.clearClient();
       }
       else {
-        this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
+        this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
       }
     } else {
       this.v5Logout();
@@ -69,16 +72,17 @@ export class AuthenticationService {
   }
 
   refreshToken(refreshV5) {
-    const authData = this.localStorageService.getObjectItem(AuthenticationService.AUTH_DATA_KEY) as any;
+    const authData = this.cookieService.getCookie(AuthenticationService.AUTH_DATA_KEY) as any;
     if (authData) {
       return this.http.post('/api/authentication/token/refresh', {
         refreshToken: authData.refresh_token
       }).pipe(map((refreshedToken: any) => {
-        this.localStorageService.remove(AuthenticationService.AUTH_DATA_KEY);
-        this.localStorageService.setObjectItem(AuthenticationService.AUTH_DATA_KEY, {
+        this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
+        const tokens = JSON.stringify({
           token: refreshedToken.accessToken,
           refresh_token: refreshedToken.refreshToken
         });
+        this.cookieService.setCookie(AuthenticationService.AUTH_DATA_KEY, tokens);
 
         if (refreshV5 === undefined || refreshV5) {
           this.v5AuthenticationRefreshService.refreshV5(refreshedToken.accessToken);

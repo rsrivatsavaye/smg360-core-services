@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { CookieService } from 'ngx-cookie-service';
 import { ENVIRONMENT_SETTINGS } from './contstants/provide.constants';
 
 
@@ -14,7 +15,10 @@ import { ENVIRONMENT_SETTINGS } from './contstants/provide.constants';
   ],
   exports: [
     TranslateModule
-  ]
+  ],
+  providers: [
+    CookieService
+  ],
 })
 
 export class Smg360CoreServicesModule {
