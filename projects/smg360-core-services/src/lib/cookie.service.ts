@@ -6,6 +6,7 @@ import { CookieOptions, CookieService as CookieSvc } from 'ngx-cookie-service';
 })
 
 export class CookieService {
+  static readonly AUTH_DATA_KEY = 'authorizationData';
 
   constructor(
     private cookieService: CookieSvc,
@@ -24,7 +25,7 @@ export class CookieService {
   }
 
   getAuthToken() {
-    return JSON.parse(this.getCookie('authorizationData'));
+    return JSON.parse(this.getCookie(CookieService.AUTH_DATA_KEY));
   }
 
   getCookie(cookieName: string) {
@@ -32,7 +33,7 @@ export class CookieService {
     return cookie;
   }
 
-  setCookie(cookieName: string, cookieValue: string, cookieOptions: CookieOptions) {
+  setCookie(cookieName: string, cookieValue: string, cookieOptions?: CookieOptions) {
     this.cookieService.set(cookieName, cookieValue, cookieOptions);
   }
 }

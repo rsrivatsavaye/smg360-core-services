@@ -10,11 +10,9 @@ import { PermissionService } from './permission.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TranslateLoaderService } from './translate-loader.service';
 import { AppSettingsService } from './app-settings.service';
-import { LocalStorageService } from './local-storage.service';
 import jwt_decode from 'jwt-decode';
 import { Permission } from './models/permission.model';
 import { isObject } from './utils/object-utils';
-import { AuthenticationService } from './authentication.service';
 import { CookieService } from './cookie.service';
 
 @Injectable({
@@ -34,7 +32,6 @@ export class UserService {
     private translateLoaderService: TranslateLoaderService,
     private translate: TranslateService,
     private appSettingsService: AppSettingsService,
-    private localStorageService: LocalStorageService,
     private cookieService: CookieService
   ) {
   }
