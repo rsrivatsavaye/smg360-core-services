@@ -4,7 +4,6 @@ import { MockProvider } from 'ng-mocks';
 import {
   AccountUtilityService,
   AppSettingsService,
-  LocalStorageService,
   PartialTranslateLoaderService,
   PermissionService,
   UserService
@@ -17,6 +16,7 @@ import { Observable, of } from 'rxjs';
 import { Permission } from './models/permission.model';
 import { UserContainer } from './models/user-container';
 import { AccountLite } from './models/account-lite';
+import { CookieService } from './cookie.service';
 
 describe('UserService', () => {
   let service: UserService;
@@ -74,7 +74,7 @@ describe('UserService', () => {
       MockProvider(TranslateService),
       MockProvider(AccountUtilityService),
       MockProvider(AppSettingsService),
-      MockProvider(LocalStorageService)
+      MockProvider(CookieService),
       ]
     });
     service = TestBed.inject(UserService);
@@ -276,108 +276,108 @@ describe('UserService', () => {
       });
 
       it('should set selected account', () => {
-            const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-            const accountUtilityService = TestBed.inject(AccountUtilityService);
-            spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
-            service.getCurrentUser().subscribe(result => {
-              expect(accountUtilityService.setSelectedAccount).toHaveBeenCalledWith(expectedAccount);
-              expect(accountUtilityService.setSelectedAccount).toHaveBeenCalledTimes(1);
-            });
-            const httpRequest = mockHttp.expectOne(url);
-            httpRequest.flush(user);
-          });
-
+        const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+        const accountUtilityService = TestBed.inject(AccountUtilityService);
+        spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
+        service.getCurrentUser().subscribe(result => {
+          expect(accountUtilityService.setSelectedAccount).toHaveBeenCalledWith(expectedAccount);
+          expect(accountUtilityService.setSelectedAccount).toHaveBeenCalledTimes(1);
+        });
+        const httpRequest = mockHttp.expectOne(url);
+        httpRequest.flush(user);
       });
+
+    });
 
     describe('should reject the response', () => {
 
-          it('when current user requests fails', () => {
-            const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-            const accountUtilityService = TestBed.inject(AccountUtilityService);
-            spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
-            const errorMessage = 'Bad Request';
-            const errorEvnt = new ErrorEvent(errorMessage);
+      it('when current user requests fails', () => {
+        const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+        const accountUtilityService = TestBed.inject(AccountUtilityService);
+        spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
+        const errorMessage = 'Bad Request';
+        const errorEvnt = new ErrorEvent(errorMessage);
 
-            service.getCurrentUser().subscribe(result => {
-              // we should not enter here.
-              expect(1).toBe(0);
-            }, (error) => {
-              expect(error.status).toBe(500);
-              expect(error.statusText).toBe(errorMessage);
-            });
-            const httpRequest = mockHttp.expectOne(url);
-            httpRequest.error(errorEvnt, {status: 500, statusText: errorMessage});
-          });
-
-          it('when current user does not have any accounts', () => {
-            const userNoAccounts = {
-              userId: 33,
-              email: 'jasminetest@smg.com',
-              settings: []
-          };
-            const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-            const accountUtilityService = TestBed.inject(AccountUtilityService);
-            spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
-            service.getCurrentUser().subscribe(result => {
-              // we should not enter here.
-              expect(1).toBe(0);
-            }, (error) => {
-              expect(error).not.toBe(undefined);
-            });
-            const httpRequest = mockHttp.expectOne(url);
-            httpRequest.flush(userNoAccounts);
-          });
-
-          it('when current user does not have an account', () => {
-            const userNoAccount = {
-              userId: 33,
-              email: 'jasminetest@smg.com',
-              settings: [],
-              accounts: {}
-          };
-            const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-            const accountUtilityService = TestBed.inject(AccountUtilityService);
-            spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
-            service.getCurrentUser().subscribe(result => {
-              // we should not enter here.
-              expect(1).toBe(0);
-            }, (error) => {
-              expect(error).not.toBe(undefined);
-            });
-            const httpRequest = mockHttp.expectOne(url);
-            httpRequest.flush(userNoAccount);
-
-          });
+        service.getCurrentUser().subscribe(result => {
+          // we should not enter here.
+          expect(1).toBe(0);
+        }, (error) => {
+          expect(error.status).toBe(500);
+          expect(error.statusText).toBe(errorMessage);
+        });
+        const httpRequest = mockHttp.expectOne(url);
+        httpRequest.error(errorEvnt, { status: 500, statusText: errorMessage });
       });
+
+      it('when current user does not have any accounts', () => {
+        const userNoAccounts = {
+          userId: 33,
+          email: 'jasminetest@smg.com',
+          settings: []
+        };
+        const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+        const accountUtilityService = TestBed.inject(AccountUtilityService);
+        spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
+        service.getCurrentUser().subscribe(result => {
+          // we should not enter here.
+          expect(1).toBe(0);
+        }, (error) => {
+          expect(error).not.toBe(undefined);
+        });
+        const httpRequest = mockHttp.expectOne(url);
+        httpRequest.flush(userNoAccounts);
+      });
+
+      it('when current user does not have an account', () => {
+        const userNoAccount = {
+          userId: 33,
+          email: 'jasminetest@smg.com',
+          settings: [],
+          accounts: {}
+        };
+        const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+        const accountUtilityService = TestBed.inject(AccountUtilityService);
+        spyOn(accountUtilityService, 'setSelectedAccount').and.callFake(() => undefined);
+        service.getCurrentUser().subscribe(result => {
+          // we should not enter here.
+          expect(1).toBe(0);
+        }, (error) => {
+          expect(error).not.toBe(undefined);
+        });
+        const httpRequest = mockHttp.expectOne(url);
+        httpRequest.flush(userNoAccount);
+
+      });
+    });
 
   });
 
   describe('Init the service', () => {
     let appSettingsService;
-    let localStorageService;
+    let cookieService;
     let token;
     beforeEach(() => {
       appSettingsService = TestBed.inject(AppSettingsService);
       spyOn(appSettingsService, 'getSetting').and.returnValue({ internalUser: '1234' });
-      localStorageService = TestBed.inject(LocalStorageService);
+      cookieService = TestBed.inject(CookieService);
       token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZ3JvdXBfaWQiOiIxMjM0In0.cwc6xDHOskYuzBV0QKS1c8Xrpzl-VZr9UOvOFYHXLiQ';
     });
     it('should success when current user is admin', () => {
-      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(cookieService, 'getAuthToken').and.returnValue({ token });
       spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: true } as unknown as UserContainer));
       service.initService().subscribe(result => {
         expect(service.isAdmin).toEqual(true);
       });
     });
     it('should success when current user is not a admin', () => {
-      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(cookieService, 'getAuthToken').and.returnValue({ token });
       spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false } as unknown as UserContainer));
       service.initService().subscribe(result => {
         expect(service.isAdmin).toEqual(false);
       });
     });
     it('should success when current user is a internal user', () => {
-      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(cookieService, 'getAuthToken').and.returnValue({ token });
       spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false } as unknown as UserContainer));
       service.initService().subscribe(result => {
         expect(service.isInternalUser).toEqual(true);
@@ -387,7 +387,7 @@ describe('UserService', () => {
       spyOn(service, 'getAdminUser').and.returnValue(of({ isAdmin: false } as unknown as UserContainer));
       // this token has group_id = 1235;
       token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZ3JvdXBfaWQiOiIxMjM1In0.qb_6RtTWbjT-eTaLZiGRjX6ZgTYJYrSVDziYFsLN2aI';
-      spyOn(localStorageService, 'getObjectItem').and.returnValue({ token });
+      spyOn(cookieService, 'getAuthToken').and.returnValue({ token });
       service.initService().subscribe(result => {
         expect(service.isInternalUser).toEqual(false);
       });
