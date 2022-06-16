@@ -8,6 +8,7 @@ export * from './lib/account.service';
 export * from './lib/auth-token.service';
 export * from './lib/authentication.service';
 export * from './lib/cache.service';
+export * from './lib/cookie.service';
 export * from './lib/local-storage.service';
 export * from './lib/location.service';
 export * from './lib/menu.service';
