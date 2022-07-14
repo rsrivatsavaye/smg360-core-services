@@ -33,5 +33,10 @@ export enum CacheType {
     // This is intended to be a type for caching any kind of role settings (independent of business function). The cache keys should be used to avoid collisions
     RoleSettings = 32,
     ReportingFeatureFlags = 33,
-    CaseAllNotificationsCount = 34
+    CaseAllNotificationsCount = 34,
+    AggregationPeriodType = 35,
+    AvaliableOntologies = 36,
+    CommentReport = 37,
+    CategoryService = 38,
+    MeasurePromise = 39,
 }

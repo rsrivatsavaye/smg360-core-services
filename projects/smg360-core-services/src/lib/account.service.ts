@@ -1,18 +1,20 @@
+/* tslint:disable:no-inferrable-types */
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CacheService } from './cache.service';
 import { CacheType } from './enums/cacheType.enum';
-import { Observable, of, scheduled, Subject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 import { Accounts } from './models/accounts.model';
-import { Account } from "./models/account.model";
+import { Account } from './models/account.model';
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  BaseUrl: string = "";
+  BaseUrl: string = '';
+  private lastFetchedAccount: Account;
   constructor(private http: HttpClient, private cacheService: CacheService) {
 
   }
@@ -27,9 +29,9 @@ export class AccountService {
     //
     return this.http.get<Array<Account>>(this.BaseUrl + '/api/account/listing')
       .pipe(take(1), map((accounts: Array<Account>) => {
-        var allAccounts = Accounts.create();
-        accounts.forEach(function (account) {
-          allAccounts.add(account.id, account.nameKey, account.type);
+        const allAccounts = Accounts.create();
+        accounts.forEach(account => {
+          allAccounts.add(account.id, account.nameKey, account.type, account.isActive, account.classification);
         });
         this.cacheService.set(CacheType.Account, allAccountsCacheKey, allAccounts);
         return allAccounts;
@@ -47,10 +49,17 @@ export class AccountService {
       return new Observable((observer) => observer.next(account));
     }
 
-    return this.http.get<Account>(this.BaseUrl + `/api/account/${accountId}`).pipe(take(1), map((account: Account) => {
-      this.cacheService.set(CacheType.Account, accountId, account);
-      return account;
-    }));
+    return this.http.get<Account>(this.BaseUrl + `/api/account/${accountId}`).pipe(
+      take(1),
+      tap((acc: Account) => {
+        this.cacheService.set(CacheType.Account, accountId, acc);
+        this.lastFetchedAccount = acc;
+      }),
+    );
+  }
+
+  getLastFetchedAccount() {
+    return this.lastFetchedAccount;
   }
 
   save(account: Account): Observable<Account> {

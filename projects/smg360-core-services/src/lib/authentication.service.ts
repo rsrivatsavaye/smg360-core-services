@@ -1,24 +1,28 @@
 import { HttpClient } from '@angular/common/http';
-import {  Injectable } from '@angular/core';
-import { map } from 'rxjs/internal/operators/map';
+import { Injectable } from '@angular/core';
+import { catchError, map } from 'rxjs/operators';
 import { Views } from './enums/views.enum';
 import { LocalStorageService } from './local-storage.service';
 import { LocationService } from './location.service';
 import { AuthSettings } from './models/auth-settings.model';
 import { V5AuthenticationRefreshService } from './v5-authentication-refresh.service';
 import { ViewService } from './view.service';
+import { CookieService } from './cookie.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
+  static readonly AUTH_DATA_KEY = 'authorizationData';
 
   constructor(
     private viewService: ViewService,
     private v5AuthenticationRefreshService: V5AuthenticationRefreshService,
-    private localStorageService:LocalStorageService,
-    private locationService:LocationService,
-    private http: HttpClient) { }
+    private localStorageService: LocalStorageService,
+    private locationService: LocationService,
+    private http: HttpClient,
+    private cookieService: CookieService
+  ) { }
 
 
   auth360() {
@@ -26,16 +30,16 @@ export class AuthenticationService {
   }
 
   clearClient() {
-    this.localStorageService.remove("client");
-    this.localStorageService.remove("authorizationData");
+    this.localStorageService.remove('client');
+    this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
   }
 
   logOut(v5Logoutcheck?) {
-    console.info("AuthenticationService - logout() called.");
-    const authData:any = this.localStorageService.getObjectItem("authorizationData");
+    console.info('AuthenticationService - logout() called.');
+    const authData: any = this.cookieService.getAuthToken();
 
     if (v5Logoutcheck) {
-      this.localStorageService.remove("authorizationData");
+      this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
       this.v5Logout();
     }
 
@@ -51,7 +55,7 @@ export class AuthenticationService {
         this.clearClient();
       }
       else {
-        this.localStorageService.remove("authorizationData");
+        this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
       }
     } else {
       this.v5Logout();
@@ -59,7 +63,7 @@ export class AuthenticationService {
   }
 
   is360User() {
-    const client = this.localStorageService.getItem("client");
+    const client = this.localStorageService.getItem('client');
     return client ? client === AuthSettings.smg360Client : true;
   }
 
@@ -68,27 +72,31 @@ export class AuthenticationService {
   }
 
   refreshToken(refreshV5) {
-    const authData = this.localStorageService.getObjectItem("authorizationData") as any;
+    const authData = this.cookieService.getCookie(AuthenticationService.AUTH_DATA_KEY) as any;
     if (authData) {
-     return this.http.post("/api/authentication/token/refresh", authData.refresh_token).pipe(map((refreshedToken: any) => {
-      this.localStorageService.remove("authorizationData");
-      this.localStorageService.setObjectItem("authorizationData", {
+      return this.http.post('/api/authentication/token/refresh', {
+        refreshToken: authData.refresh_token
+      }).pipe(map((refreshedToken: any) => {
+        this.cookieService.deleteCookie(AuthenticationService.AUTH_DATA_KEY);
+        const tokens = JSON.stringify({
           token: refreshedToken.accessToken,
           refresh_token: refreshedToken.refreshToken
         });
+        this.cookieService.setCookie(AuthenticationService.AUTH_DATA_KEY, tokens);
 
         if (refreshV5 === undefined || refreshV5) {
           this.v5AuthenticationRefreshService.refreshV5(refreshedToken.accessToken);
         }
 
-      //  this.refreshPromise = null;
-      }), (error) => {
-        this.logOut();
-        throw new Error("Error refreshing token");
-      });
+        //  this.refreshPromise = null;
+      }, catchError(error => {
+        //this.logOut();
+        throw new Error('Error refreshing token');
+      })
+      ));
 
     } else {
-      throw new Error("Error refreshing token authData not present in local storage");
+      throw new Error('Error refreshing token authData not present in local storage');
     }
   }
 
@@ -96,7 +104,7 @@ export class AuthenticationService {
     // tell v5 to logout for pod and embedded modes
     const viewServiceMode = this.viewService.getMode();
     if (viewServiceMode === Views.Pod || viewServiceMode === Views.Embedded) {
-      window.top.postMessage("logout360Redirect", "*");
+      window.top.postMessage('logout360Redirect', '*');
     }
   }
 

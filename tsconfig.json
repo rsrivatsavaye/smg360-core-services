@@ -19,10 +19,6 @@
       "dom"
     ],
     "paths": {
-      "smgtest": [
-        "dist/smgtest/smgtest",
-        "dist/smgtest"
-      ],
       "smg360-core-services": [
         "dist/smg360-core-services/smg360-core-services",
         "dist/smg360-core-services"

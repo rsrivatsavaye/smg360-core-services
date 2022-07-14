@@ -1,19 +1,34 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { CookieService } from 'ngx-cookie-service';
+import { ENVIRONMENT_SETTINGS } from './contstants/provide.constants';
+
+
 
 @NgModule({
-  declarations: [],
+  declarations: [
+  ],
   imports: [
     HttpClientModule,
     TranslateModule
-  ]
-  ,
+  ],
   exports: [
     TranslateModule
   ],
-  providers:[
-    {provide:Window,useValue:window}
-  ]
+  providers: [
+    CookieService
+  ],
 })
-export class Smg360CoreServicesModule { }
+
+export class Smg360CoreServicesModule {
+  static forRoot(config: any): ModuleWithProviders<Smg360CoreServicesModule> {
+    return {
+      ngModule: Smg360CoreServicesModule,
+      providers: [
+        { provide: Window, useValue: window },
+        { provide: ENVIRONMENT_SETTINGS, useValue: config }
+      ]
+    };
+  }
+}

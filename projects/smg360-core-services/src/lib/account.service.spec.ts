@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { MockProvider } from 'ng-mocks'
+import { MockProvider } from 'ng-mocks';
 import { AccountService } from './account.service';
 import { CacheService } from './cache.service';
 import { Accounts } from './models/accounts.model';
@@ -12,17 +12,17 @@ describe('AccountService', () => {
 
   const cacheType = CacheType.Account;
   const allAccountsCacheKey = 'all-accounts';
-  var mockAllAccounts: Array<Account> = [
-    { id: '1', nameKey: 'name 1' } as Account,
-    { id: '2', nameKey: 'name 2' } as Account,
-    { id: '3', nameKey: 'name 3' } as Account
+  const mockAllAccounts: Array<Account> = [
+    { id: '1', nameKey: 'name 1', isActive: true, classification: 0 } as Account,
+    { id: '2', nameKey: 'name 2', isActive: true, classification: 0  } as Account,
+    { id: '3', nameKey: 'name 3', isActive: true, classification: 0  } as Account
   ];
   function getAccountsModel() {
 
-    var allAccounts = new Accounts();
+    const allAccounts = new Accounts();
 
-    mockAllAccounts.forEach(function (account) {
-      allAccounts.add(account.id, account.nameKey, undefined);
+    mockAllAccounts.forEach(account => {
+      allAccounts.add(account.id, account.nameKey, undefined, account.isActive, account.classification);
     });
 
     return allAccounts;
@@ -40,28 +40,28 @@ describe('AccountService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('initial state', function () {
+  describe('initial state', () => {
 
-    it('should be defined', function () {
+    it('should be defined', () => {
       expect(service).toBeDefined();
     });
 
-    it('should define a method to get list of accounts', function () {
+    it('should define a method to get list of accounts', () => {
       expect(service.getListing).toBeDefined();
       expect(service.getListing).toEqual(jasmine.any(Function));
     });
 
-    it('should define a method to get a specific account', function () {
+    it('should define a method to get a specific account', () => {
       expect(service.get).toBeDefined();
       expect(service.get).toEqual(jasmine.any(Function));
     });
 
-    it('should define a method to save and account', function () {
+    it('should define a method to save and account', () => {
       expect(service.save).toBeDefined();
       expect(service.save).toEqual(jasmine.any(Function));
     });
 
-    it('should define a method to invalidate cache', function () {
+    it('should define a method to invalidate cache', () => {
       expect(service.invalidateCache).toBeDefined();
       expect(service.invalidateCache).toEqual(jasmine.any(Function));
     });
@@ -69,32 +69,32 @@ describe('AccountService', () => {
   });
 
 
-  describe(':: API calls', function () {
-    var mockHttp: HttpTestingController;
+  describe(':: API calls', () => {
+    let mockHttp: HttpTestingController;
     beforeEach(() => {
       mockHttp = TestBed.inject(HttpTestingController);
-    })
-    describe(':: getListing', function () {
+    });
+    describe(':: getListing', () => {
 
 
       it('should make a request when not in cache', () => {
-        var cacheService: CacheService = TestBed.inject(CacheService);
-        spyOn(cacheService, "get").and.callFake(() => undefined);
-        spyOn(cacheService, "set").and.callFake(() => []);
-        var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+        const cacheService: CacheService = TestBed.inject(CacheService);
+        spyOn(cacheService, 'get').and.callFake(() => undefined);
+        spyOn(cacheService, 'set').and.callFake(() => []);
+        const innerMockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
         service.getListing().subscribe((result) => {
           expect(httpRequest.request.method).toEqual('GET');
           expect(cacheService.get).toHaveBeenCalledTimes(1);
           expect(cacheService.set).toHaveBeenCalledTimes(1);
-        })
-        var httpRequest = mockHttp.expectOne(service.BaseUrl + '/api/account/listing');
+        });
+        const httpRequest = innerMockHttp.expectOne(service.BaseUrl + '/api/account/listing');
         httpRequest.flush([]);
       });
 
-      it('should not make request when cache in cache', function () {
-        var cacheService: CacheService = TestBed.inject(CacheService);
-        spyOn(cacheService, "get").and.callFake(() => getAccountsModel());
-        spyOn(cacheService, "set").and.callFake(() => []);
+      it('should not make request when cache in cache', () => {
+        const cacheService: CacheService = TestBed.inject(CacheService);
+        spyOn(cacheService, 'get').and.callFake(() => getAccountsModel());
+        spyOn(cacheService, 'set').and.callFake(() => []);
 
         service.getListing().subscribe((response) => {
           expect(cacheService.get).toHaveBeenCalledWith(cacheType, allAccountsCacheKey);
@@ -107,26 +107,26 @@ describe('AccountService', () => {
       });
     });
 
-    describe(':: get', function () {
+    describe(':: get', () => {
 
-      it('should make a request when not in cache', function () {
+      it('should make a request when not in cache', () => {
 
-        var cacheService: CacheService = TestBed.inject(CacheService);
-        spyOn(cacheService, "get").and.callFake(() => undefined);
-        spyOn(cacheService, "set").and.callFake(() => []);
+        const cacheService: CacheService = TestBed.inject(CacheService);
+        spyOn(cacheService, 'get').and.callFake(() => undefined);
+        spyOn(cacheService, 'set').and.callFake(() => []);
         service.get(mockAllAccounts[0].id).subscribe((result) => {
           expect(cacheService.get).toHaveBeenCalledWith(cacheType, mockAllAccounts[0].id);
           expect(cacheService.set).toHaveBeenCalledWith(cacheType, mockAllAccounts[0].id, result);
         });
-        var response = mockHttp.expectOne('/api/account/' + mockAllAccounts[0].id);
+        const response = mockHttp.expectOne('/api/account/' + mockAllAccounts[0].id);
         response.flush(mockAllAccounts[0]);
 
       });
 
-      it('should not make request when cached', function () {
-        var cacheService: CacheService = TestBed.inject(CacheService);
-        spyOn(cacheService, "get").and.callFake(() => mockAllAccounts[0]);
-        spyOn(cacheService, "set").and.callFake(() => []);
+      it('should not make request when cached', () => {
+        const cacheService: CacheService = TestBed.inject(CacheService);
+        spyOn(cacheService, 'get').and.callFake(() => mockAllAccounts[0]);
+        spyOn(cacheService, 'set').and.callFake(() => []);
 
         service.get(mockAllAccounts[0].id).subscribe((result) => {
           expect(cacheService.get).toHaveBeenCalledWith(cacheType, mockAllAccounts[0].id);
@@ -137,22 +137,22 @@ describe('AccountService', () => {
       });
     });
 
-    describe(':: save', function () {
+    describe(':: save', () => {
 
-      it('should make a request', function () {
+      it('should make a request', () => {
         service.save(mockAllAccounts[0]).subscribe(results => {
           expect(results).toBe(mockAllAccounts[0]);
         });
-        var response = mockHttp.expectOne('/api/account/save');
+        const response = mockHttp.expectOne('/api/account/save');
         response.flush(mockAllAccounts[0]);
       });
     });
 
 
-    describe(':: invalidateCache', function () {
-      it('should clear account cache', function () {
-        var cacheService: CacheService = TestBed.inject(CacheService);
-        spyOn(cacheService, "clear").and.callFake((_cacheType) => { });
+    describe(':: invalidateCache', () => {
+      it('should clear account cache', () => {
+        const cacheService: CacheService = TestBed.inject(CacheService);
+        spyOn(cacheService, 'clear').and.callFake((_cacheType) => { });
         service.invalidateCache();
 
         expect(cacheService.clear).toHaveBeenCalledWith(cacheType);

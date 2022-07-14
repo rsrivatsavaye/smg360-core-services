@@ -1,37 +1,61 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/internal/operators/map';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { take } from 'rxjs/internal/operators/take';
+import { Observable, of } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 import { AccountUtilityService } from './account-utility.service';
 import { CacheService } from './cache.service';
 import { CacheType } from './enums/cacheType.enum';
 import { EntityType } from './enums/entity-type.enum';
 import { PermissionService } from './permission.service';
-import { TranslateService } from '@ngx-translate/core'
+import { TranslateService } from '@ngx-translate/core';
 import { TranslateLoaderService } from './translate-loader.service';
+import { AppSettingsService } from './app-settings.service';
+import jwt_decode from 'jwt-decode';
+import { Permission } from './models/permission.model';
+import { isObject } from './utils/object-utils';
+import { CookieService } from './cookie.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
+  userCacheKey = 'current-user';
   adminUserCacheKey = 'current-admin-user';
+  isAdmin = false;
+  isInternalUser = false;
 
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private accountUtilityService: AccountUtilityService,
     private permissionService: PermissionService,
     private cacheService: CacheService,
     private translateLoaderService: TranslateLoaderService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private appSettingsService: AppSettingsService,
+    private cookieService: CookieService
+  ) {
+  }
 
+  initService() {
+    return this.getAdminUser().pipe(tap(user => {
+      this.isAdmin = user.isAdmin as boolean;
+      const groupIdCanAccessToAdmin = [this.appSettingsService.getSetting('groups').internalUser];
+      const jwtDecoded = this.getToken();
+      // get list group id from token claim, if the user have only one group the type of the group_id will be a string,
+      // otherwise it will be string array
+      const jwtGroup = jwtDecoded.group_id ? (typeof (jwtDecoded.group_id) === 'string'
+        ? [jwtDecoded.group_id]
+        : jwtDecoded.group_id) : [];
+      this.isInternalUser = jwtGroup.filter(g => groupIdCanAccessToAdmin.indexOf(g) >= 0).length > 0;
+    }));
+  }
 
   activate() {
-    const timezoneOffset = -(new Date("2015-01-01").getTimezoneOffset());
+    const timezoneOffset = -(new Date('2015-01-01').getTimezoneOffset());
   }
 
   getCachedUser() {
-    return this.cacheService.get(CacheType.UserMeta, 'current-user');
+    return this.cacheService.get(CacheType.UserMeta, this.userCacheKey);
   }
 
   getCachedAdminUser() {
@@ -39,7 +63,7 @@ export class UserService {
   }
 
   setCurrentUser(user) {
-    this.cacheService.set(CacheType.UserMeta, 'current-user', user);
+    this.cacheService.set(CacheType.UserMeta, this.userCacheKey, user);
   }
 
   setAdminUser(user) {
@@ -47,69 +71,74 @@ export class UserService {
   }
 
   getAdminUser() {
-    let currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
-    if (!currentUser) {
-      let isAdmin = false;
+    const currentUser = this.cacheService.get(CacheType.UserMeta, this.adminUserCacheKey);
+    if (currentUser) {
+      return of(currentUser);
+    }
 
-      return this.getCurrent().pipe(take(1), switchMap(
-        (user) => {
-          return this.permissionService.getPermissionsByObjectId(EntityType.Account, null).pipe(map((permission) => {
+    let isAdmin = false;
+
+    return this.getCurrent().pipe(
+      take(1),
+      switchMap((user) => {
+        return this.permissionService.getPermissionsByObjectId(EntityType.Account, null).pipe(
+          map((permission: Permission) => {
             if (permission.canUpdate) {
               isAdmin = true;
             }
             user.isAdmin = isAdmin;
-            currentUser = user;
-            this.cacheService.set(CacheType.UserMeta, this.adminUserCacheKey, user);
+            this.setAdminUser(user);
             this.translateLoaderService.loadAdminTemplate();
             return user;
-          }))
-        }));
-
-    } else {
-      return new Observable((observer) => observer.next(currentUser));
-    }
+          }),
+        );
+      }),
+    );
   }
+
   getCurrentUser() {
-    var currentUser = this.getCachedUser();
-
-    if (!currentUser) {
-      return this.getCurrent().pipe(take(1), switchMap(
-        (user) => {
-          currentUser = user;
-
-          if (user.accounts && user.accounts instanceof Object) {
-            const keys = Object.keys(user.accounts);
-            const defaultUserAccount = user.accounts[keys[0]];
-            if (defaultUserAccount) {
-              this.accountUtilityService.setSelectedAccount(defaultUserAccount.account);
-              return this.translateLoaderService.loadAccountTemplate(defaultUserAccount.account.id).pipe(map(results => {
-                var value = this.translate.instant('MENU');
-                console.log(value);
-                this.setCurrentUser(user);
-                return user;
-              }));
-            }
-            else{
-              throw Error("No Accounts for user");
-            }
-          } else{
-            throw Error("No Accounts for user");
-          }
-        }));
-
-    } else {
-      return new Observable((observer) => observer.next(currentUser));
+    const currentUser = this.getCachedUser();
+    if (currentUser) {
+      return of(currentUser);
     }
+
+    return this.getCurrent().pipe(
+      take(1),
+      switchMap((user) => {
+        const keys = Object.keys(user.accounts ?? {});
+        if (isObject(user.accounts) && keys.length !== 0 && user.accounts[keys[0]]) {
+          const defaultUserAccount = user.accounts[keys[0]];
+          this.accountUtilityService.setSelectedAccount(defaultUserAccount.account);
+          return this.translateLoaderService.loadAccountTemplate(defaultUserAccount.account.id)
+            .pipe(map(_ => {
+              this.setCurrentUser(user);
+              return user;
+            }));
+        } else {
+          throw Error('No Accounts for user');
+        }
+      }),
+    );
+  }
+
+  getAuthClientId(): string {
+    return this.getToken().client_id;
+  }
+
+  getGroupUsers(groupId: string | number): Observable<any> {
+    return this.http.get<any>(`/api/user/groupUsers/${groupId}`);
+  }
+
+  createUsers(usersCreateRequest: any): Observable<any> {
+    return this.http.post<any>('/api/user/create', usersCreateRequest);
   }
 
   private getCurrent(): Observable<any> {
-    return this.http.get<any>("/api/user/current");
-  }
-  private getGroupUsers(groupId: string | number): Observable<any> {
-    return this.http.get<any>("/api/user/groupUsers/${groupId}");
-  }
-  private createUsers(usersCreateRequest: any): Observable<any> {
-    return this.http.post<any>("/api/user/create", usersCreateRequest);
+    return this.http.get<any>('/api/user/current');
   }
 
+  private getToken(): any {
+    const auth: any = this.cookieService.getAuthToken();
+    return jwt_decode(auth.token);
+  }
 }

@@ -4,16 +4,17 @@ import { CacheService } from './cache.service';
 import { EntityType } from './enums/entity-type.enum';
 
 import { PermissionService } from './permission.service';
+import { Permission } from './models/permission.model';
 
 describe('PermissionService', () => {
   let service: PermissionService;
-  const groupId = "14987";
+  const groupId = '14987';
   const entityType = EntityType.Account;
   const moqCacheData = [
     {
       id: 7894,
       entityType: EntityType.Account,
-      entityId: "5898d776e0136f280f8576fb",
+      entityId: '5898d776e0136f280f8576fb',
       canCreate: false,
       canRead: true,
       canUpdate: true,
@@ -22,7 +23,7 @@ describe('PermissionService', () => {
     {
       id: 5923,
       entityType: EntityType.Account,
-      entityId: "2452b52345323523vf5vg365",
+      entityId: '2452b52345323523vf5vg365',
       canCreate: true,
       canRead: true,
       canUpdate: false,
@@ -33,7 +34,7 @@ describe('PermissionService', () => {
     {
       id: 2133,
       entityType: EntityType.Account,
-      entityId: "5898d776e0136f280f8576fb",
+      entityId: '5898d776e0136f280f8576fb',
       canCreate: false,
       canRead: true,
       canUpdate: false,
@@ -42,7 +43,7 @@ describe('PermissionService', () => {
     {
       id: 3331,
       entityType: EntityType.Account,
-      entityId: "",
+      entityId: '',
       canCreate: true,
       canRead: true,
       canUpdate: true,
@@ -64,24 +65,24 @@ describe('PermissionService', () => {
 
 
 
-  describe("Initial State", function () {
-    it("should define the service", function () {
+  describe('Initial State', () => {
+    it('should define the service', () => {
       expect(service).toBeDefined();
     });
 
-    it("should define getPermissions method", function () {
+    it('should define getPermissions method', () => {
       expect(service.getPermissions).toBeDefined();
       expect(service.getPermissions).toEqual(jasmine.any(Function));
     });
 
-    it("should define getGroupPermissions method", function () {
+    it('should define getGroupPermissions method', () => {
       expect(service.getGroupPermissions).toBeDefined();
       expect(service.getGroupPermissions).toEqual(
         jasmine.any(Function)
       );
     });
 
-    it("should define getPermissionsByObjectId method", function () {
+    it('should define getPermissionsByObjectId method', () => {
       expect(service.getPermissionsByObjectId).toBeDefined();
       expect(service.getPermissionsByObjectId).toEqual(
         jasmine.any(Function)
@@ -89,42 +90,42 @@ describe('PermissionService', () => {
     });
   });
 
-  describe("Group Permissions", function () {
-    it("should make a request", function () {
-      const url = "/api/permission?groupId=14987";
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+  describe('Group Permissions', () => {
+    it('should make a request', () => {
+      const url = '/api/permission?groupId=14987';
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
 
       service.getGroupPermissions(groupId).subscribe(permissions => {
         expect(permissions).toBe(moqData);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      const req = mockHttp.expectOne(service.BaseUrl + url);
       req.flush(moqData);
     });
   });
 
-  describe("Permissions", function () {
-    const url = "/api/permission?entityType=6";
+  describe('Permissions', () => {
+    const url = '/api/permission?entityType=6';
 
-    it("should make a request", function () {
+    it('should make a request', () => {
 
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       service.getPermissions(entityType, useCache).subscribe(permissions => {
         expect(permissions).toBe(moqData);
         expect(cacheService.set).toHaveBeenCalledTimes(1);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      const req = mockHttp.expectOne(service.BaseUrl + url);
       req.flush(moqData);
     });
 
-    it('should retrieve from cache when cache is available and useCache flag is true', function () {
+    it('should retrieve from cache when cache is available and useCache flag is true', () => {
       useCache = true;
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => moqCacheData);
-      spyOn(cacheService, "set").and.callFake(() => []);
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => moqCacheData);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       service.getPermissions(entityType, useCache).subscribe(permissions => {
         expect(permissions).toBe(moqCacheData);
         expect(cacheService.get).toHaveBeenCalledTimes(1);
@@ -133,81 +134,81 @@ describe('PermissionService', () => {
       mockHttp.expectNone(service.BaseUrl + url);
     });
 
-    it("should make a request when no cache and useCache flag is true", function () {
+    it('should make a request when no cache and useCache flag is true', () => {
       useCache = true;
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       service.getPermissions(entityType, useCache).subscribe(permissions => {
         expect(permissions).toBe(moqData);
         expect(cacheService.get).toHaveBeenCalledTimes(1);
         expect(cacheService.set).toHaveBeenCalledTimes(1);
       });
-      var req = mockHttp.expectOne(service.BaseUrl + url);
+      const req = mockHttp.expectOne(service.BaseUrl + url);
       req.flush(moqData);
     });
   });
 
-  describe("PermissionsByObjectId", function () {
-    const url = "/api/permission?entityType=6";
+  describe('PermissionsByObjectId', () => {
+    const url = '/api/permission?entityType=6';
 
-    it("should return permission for matching objectId", function () {
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
-      const objectId = "5898d776e0136f280f8576fb";
-      var selected = moqData.filter(
+    it('should return permission for matching objectId', () => {
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
+      const objectId = '5898d776e0136f280f8576fb';
+      const selected = moqData.filter(
         x => x.entityId === objectId && x.entityType === entityType
       )[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      const httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
     });
 
-    it("should return permission for entity, when objectId is null", function () {
+    it('should return permission for entity, when objectId is null', () => {
 
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       const objectId = null;
-      var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
+      const selected = moqData.filter(x => x.entityId === '' && x.entityType === entityType)[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      const httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
 
     });
 
-    it("should return permission for entity, when objectId is empty string", function () {
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
+    it('should return permission for entity, when objectId is empty string', () => {
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       const objectId = '';
-      var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
+      const selected = moqData.filter(x => x.entityId === '' && x.entityType === entityType)[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
-        expect(permission).toBe(selected);
+        expect(permission).toEqual(selected);
       });
-      var httpRequest = mockHttp.expectOne(service.BaseUrl + url);
+      const httpRequest = mockHttp.expectOne(service.BaseUrl + url);
       httpRequest.flush(moqData);
     });
 
-    it("should return no permissions when objectId is not found", function () {
-      var mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
-      var cacheService: CacheService = TestBed.inject(CacheService);
-      spyOn(cacheService, "get").and.callFake(() => undefined);
-      spyOn(cacheService, "set").and.callFake(() => []);
+    it('should return no permissions when objectId is not found', () => {
+      const mockHttp: HttpTestingController = TestBed.inject(HttpTestingController);
+      const cacheService: CacheService = TestBed.inject(CacheService);
+      spyOn(cacheService, 'get').and.callFake(() => undefined);
+      spyOn(cacheService, 'set').and.callFake(() => []);
       const objectId = 'NotFoundObjectId';
-      var selected = moqData.filter(x => x.entityId === "" && x.entityType === entityType)[0]
+      const selected = moqData.filter(x => x.entityId === '' && x.entityType === entityType)[0];
       service.getPermissionsByObjectId(entityType, objectId).subscribe(permission => {
         expect(cacheService.set).toHaveBeenCalledTimes(1);
         expect(permission).toBe({
@@ -215,7 +216,7 @@ describe('PermissionService', () => {
           canRead: false,
           canUpdate: false,
           canDelete: false
-        });
+        } as Permission);
       });
     });
   });
